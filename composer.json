@@ -1,0 +1,28 @@
+{
+    "name": "beelab/web-test",
+    "type": "symfony-bundle",
+    "description": "A test library for Symfony framework",
+    "keywords": ["Symfony", "test"],
+    "homepage": "http://bee-lab.net",
+    "license": "LGPL-3.0",
+    "authors": [
+        {
+            "name": "Massimiliano Arione ",
+            "email": "massimiliano.arione@bee-lab.it"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "symfony/framework-bundle": "~2.3",
+        "doctrine/data-fixtures": "1.0.*"
+    },
+    "autoload": {
+        "psr-0": { "Beelab\\TestBundle": "" }
+    },
+    "target-dir": "Beelab/TestBundle",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.1.x-dev"
+        }
+    }
+}
