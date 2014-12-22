@@ -72,20 +72,22 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * See http://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
      * You need a "domain" parameter, defining the current domain of your app
      *
-     * @param string  $browser
      * @param boolean $delete
      */
-    protected function saveOutput($browser = '/usr/bin/firefox', $delete = true)
+    protected function saveOutput($delete = true)
     {
+        $browser = $this->container->getParameter('browser');
         $file = $this->container->get('kernel')->getRootDir() . '/../web/test.html';
         $url = $this->container->getParameter('domain') . '/test.html';
         if (false !== $profile = $this->client->getProfile()) {
             $url .= '?' . $profile->getToken();
         }
         file_put_contents($file, $this->client->getResponse()->getContent());
-        $process = new Process($browser . ' ' . $url);
-        $process->start();
-        sleep(3);
+        if (!empty($browser) {
+            $process = new Process($browser . ' ' . $url);
+            $process->start();
+            sleep(3);
+        }
         if ($delete) {
             unlink($file);
         }

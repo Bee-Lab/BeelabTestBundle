@@ -17,10 +17,11 @@ Enable bundle in the kernel:
 
 public function registerBundles()
 {
-    $bundles = array(
+    // ...
+    if (in_array($this->getEnvironment(), ['dev', 'test'])) {
         // ...
-        new Beelab\TestBundle\BeelabTestBundle(),
-    );
+        $bundles[] = new Beelab\TestBundle\BeelabTestBundle();
+    }
 }
 ```
 
@@ -30,8 +31,7 @@ In your functional test class, extend ``Beelab\Test\WebTestCase`` instead of ``S
 
 This requires only a change in your ``use`` statements.
 
-Before:
-
+With standard Symfony tests:
 ```php
 <?php
 
@@ -43,8 +43,7 @@ class MyTest extends WebTestCase
 }
 ```
 
-After:
-
+With this bundle:
 ```php
 <?php
 
@@ -64,7 +63,8 @@ class MyTest extends WebTestCase
 
 * Support for paratest
 
-  Just define your new environments, e.g. ``test1``, ``test2``, etc.
+  Just define your new environments, e.g. ``test1``, ``test2``, etc. See [paratest](https://github.com/brianium/paratest)
+  for more info.
 
 * Support for basic authentication
 
@@ -74,13 +74,19 @@ class MyTest extends WebTestCase
 * Browser output debug
 
   You can output the content of response in your browser, just calling ``$this->saveOutput``. You need to define a
-  parameter named ``domain``. Default browser is ``/usr/bin/firefox``. You can change browser path by passing it as
-  first argument, whiel a ``false`` as second argument will prevent output page deletion (in this case, you can get it
-  from ``web`` directory)
+  parameter named ``domain``. The output will be save under document root and displayed with browser (by default,
+  ``/usr/bin/firefox``), then the page will be deleted. You can pass ``false`` as argument to prevent page deletion (in
+  this case, you can get it from your document root directory. Don't forget to remove it by hand, then). If you want
+  to change browser path, define it in your configuration:
+  ```yaml
+  # app/config/config_test.yml
+  beelab_test:
+      browser: /usr/local/bin/chrome
+  ```
 
 * Automatic login
 
-  This is integrated with [BeelabUserBundle](https://github.com/Bee-Lab/BeelabUserBundle)
+  This is integrated with [BeelabUserBundle](https://github.com/Bee-Lab/BeelabUserBundle).
 
 * Files for forms
 
@@ -99,5 +105,6 @@ class MyTest extends WebTestCase
 
 * Fast ajax calls
 
-  ``$this->ajax('GET', 'uri') is a convenient shortcut for
-  ``$this->client->request($method, $uri, [], [], ['HTTP_X-Requested-With' => 'XMLHttpRequest'])``
+  ``$this->ajax($method, $uri)`` is a convenient shortcut for
+  ``$this->client->request($method, $uri, [], [], ['HTTP_X-Requested-With' => 'XMLHttpRequest'])``. Of course, you
+  can also pass POST and FILES parameters using 3rd and 4th arguments.
