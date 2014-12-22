@@ -1,5 +1,5 @@
 {
-    "name": "beelab/web-test",
+    "name": "beelab/test-bundle",
     "type": "symfony-bundle",
     "description": "A test library for Symfony framework",
     "keywords": ["Symfony", "test"],
