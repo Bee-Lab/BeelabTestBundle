@@ -76,7 +76,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function saveOutput($delete = true)
     {
-        $browser = $this->container->getParameter('browser');
+        $browser = $this->container->getParameter('beelab_test.browser');
         $file = $this->container->get('kernel')->getRootDir() . '/../web/test.html';
         $url = $this->container->getParameter('domain') . '/test.html';
         if (false !== $profile = $this->client->getProfile()) {
