@@ -1,6 +1,6 @@
 <?php
 
-namespace Beelab\Test;
+namespace Beelab\TestBundle\Test;
 
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
@@ -83,7 +83,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
             $url .= '?' . $profile->getToken();
         }
         file_put_contents($file, $this->client->getResponse()->getContent());
-        if (!empty($browser) {
+        if (!empty($browser)) {
             $process = new Process($browser . ' ' . $url);
             $process->start();
             sleep(3);
@@ -212,6 +212,20 @@ EOF;
     protected function getFormValue(Crawler $crawler, $fieldId)
     {
         return $crawler->filter('#' . $fieldId)->attr('value');
+    }
+
+    /**
+     * Do an ajax request
+     *
+     * @param  string                                $method
+     * @param  string                                $uri
+     * @param  array                                 $params
+     * @param  array                                 $files
+     * @return \Symfony\Component\DomCrawler\Crawler
+     */
+    protected function ajax($method = 'GET', $uri, array $params = [], array $files = [])
+    {
+        return $this->client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
     }
 
     /**
