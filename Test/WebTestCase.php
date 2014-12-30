@@ -6,8 +6,10 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as Loader;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
@@ -226,6 +228,24 @@ EOF;
     protected function ajax($method = 'GET', $uri, array $params = [], array $files = [])
     {
         return $this->client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
+    }
+
+    /**
+     * Execute a command and return output
+     *
+     * @param  string $name     Command name (e.g. "app:send")
+     * @param  mixed  $command  Command instannce (e.g. new SendCommand())
+     * @return string
+     */
+    protected function commandTest($name, $command)
+    {
+        $application = new Application($this->client->getKernel());
+        $application->add($command);
+        $cmd = $application->find($name);
+        $commandTester = new CommandTester($cmd);
+        $commandTester->execute(['command' => $cmd->getName()]);
+
+        return $commandTester->getDisplay();
     }
 
     /**

@@ -108,3 +108,8 @@ class MyTest extends WebTestCase
   ``$this->ajax($method, $uri)`` is a convenient shortcut for
   ``$this->client->request($method, $uri, [], [], ['HTTP_X-Requested-With' => 'XMLHttpRequest'])``. Of course, you
   can also pass POST and FILES parameters using 3rd and 4th arguments.
+
+* Test commands
+
+  You can test a command simply executing something like ``$output = $this->commandTest('app:alert', new AlertCommand());``
+  and then doing assertion on ``$output``.
