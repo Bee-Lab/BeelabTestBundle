@@ -208,12 +208,13 @@ EOF;
      * Useful for POSTs
      *
      * @param  Crawler $crawler
-     * @param  string  $field
+     * @param  string  $fieldId
+     * @param  integer $position
      * @return string
      */
-    protected function getFormValue(Crawler $crawler, $fieldId)
+    protected function getFormValue(Crawler $crawler, $fieldId, $position = 0)
     {
-        return $crawler->filter('#' . $fieldId)->attr('value');
+        return $crawler->filter('#' . $fieldId)->eq($position)->attr('value');
     }
 
     /**

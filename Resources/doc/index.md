@@ -113,3 +113,11 @@ class MyTest extends WebTestCase
 
   You can test a command simply executing something like ``$output = $this->commandTest('app:alert', new AlertCommand());``
   and then doing assertion on ``$output``.
+
+* Form values shortcut
+
+  If you need to retrieve the value of a form field, you can use ``$this->getFormValue($crawler, 'form_field')``. This
+  is useful for retrieving CSRF token values or select values. In case of a select, note that you need to add ``option``
+  after your field's id, and you can pass a third optional parameter with the position. If, for example, you want to
+  retrieve the value of your second option in a ``bar`` field of a ``foo`` form (maybe beacuse the first one is empty),
+  you can do ``$this->getFormValue($crawler, 'foo_bar option', 1)``
