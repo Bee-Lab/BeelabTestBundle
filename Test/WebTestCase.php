@@ -236,15 +236,16 @@ EOF;
      *
      * @param  string $name     Command name (e.g. "app:send")
      * @param  mixed  $command  Command instannce (e.g. new SendCommand())
+     * @param  array  $options  Possible command options
      * @return string
      */
-    protected function commandTest($name, $command)
+    protected function commandTest($name, $command, array $options = [])
     {
         $application = new Application($this->client->getKernel());
         $application->add($command);
         $cmd = $application->find($name);
         $commandTester = new CommandTester($cmd);
-        $commandTester->execute(['command' => $cmd->getName()]);
+        $commandTester->execute(array_merge(['command' => $cmd->getName()], $options));
 
         return $commandTester->getDisplay();
     }
