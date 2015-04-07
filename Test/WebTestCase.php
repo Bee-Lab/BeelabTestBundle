@@ -65,7 +65,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function tearDown()
     {
-        $this->em->getConnection()->close();
+        if (!is_null($this->em)) {
+            $this->em->getConnection()->close();
+        }
         parent::tearDown();
     }
 
