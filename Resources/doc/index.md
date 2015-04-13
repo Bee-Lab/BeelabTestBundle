@@ -6,7 +6,7 @@ BeelabTestBundle Documentation
 Run from terminal:
 
 ```bash
-$ php composer require --dev beelab/test-bundle:1.0.*
+$ composer require --dev beelab/test-bundle
 ```
 
 Enable bundle in the kernel:
@@ -90,7 +90,8 @@ class MyTest extends WebTestCase
 
 * Files for forms
 
-  Use ``$this->getImageFile()``, ``$this->getPdfFile()``, ``$this->getZipFile()`` to get files for your uploadable fields.
+  Use ``$this->getImageFile()``, ``$this->getPdfFile()``, ``$this->getZipFile()``, and ``$this->getTxtFile()`` to get
+  files of various types for your uploadable fields.
   In forms with more than a field of the same type, use ``$this->getImageFile(1)``, ``$this->getImageFile(2)``, etc.
 
 * Fast fixtures load

@@ -170,6 +170,19 @@ EOF;
     }
 
     /**
+     * Get a txt file to be used in a form
+     *
+     * @param  int          $file
+     * @return UploadedFile
+     */
+    protected function gettxtFile($file = 0)
+    {
+        $data = 'Lorem ipsum dolor sit amet';
+
+        return $this->getFile($file, $data, 'txt', 'text/plain');
+    }
+
+    /**
      * Load fixtures as an array of "names"
      * This is inspired by https://github.com/liip/LiipFunctionalTestBundle
      *
