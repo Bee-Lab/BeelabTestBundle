@@ -175,7 +175,7 @@ EOF;
      * @param  int          $file
      * @return UploadedFile
      */
-    protected function gettxtFile($file = 0)
+    protected function getTxtFile($file = 0)
     {
         $data = 'Lorem ipsum dolor sit amet';
 
