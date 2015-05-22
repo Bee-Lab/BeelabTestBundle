@@ -122,3 +122,9 @@ class MyTest extends WebTestCase
   after your field's id, and you can pass a third optional parameter with the position. If, for example, you want to
   retrieve the value of your second option in a ``bar`` field of a ``foo`` form (maybe beacuse the first one is empty),
   you can do ``$this->getFormValue($crawler, 'foo_bar option', 1)``
+
+* AbstractContainerAwareFixture
+
+  When you need the service container in your fixtures, instead of implementing
+  ``Symfony\Component\DependencyInjection\ContainerAwareInterface``, you can extends
+  ``Beelab\TestBundle\DataFixtures\AbstractContainerAwareFixture``.

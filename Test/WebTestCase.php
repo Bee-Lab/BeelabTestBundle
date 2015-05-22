@@ -16,7 +16,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 /**
- * WebTestCase
+ * WebTestCase.
  */
 abstract class WebTestCase extends SymfonyWebTestCase
 {
@@ -42,7 +42,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     {
         $environment = 'test';
         if (getenv('TEST_TOKEN') !== false) {
-            $environment = 'test' . getenv('TEST_TOKEN');
+            $environment = 'test'.getenv('TEST_TOKEN');
         }
         if (empty($this->container)) {
             $kernel = static::createKernel(['environment' => $environment]);
@@ -74,21 +74,21 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Save request output and show it in the browser
      * See http://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
-     * You need a "domain" parameter, defining the current domain of your app
+     * You need a "domain" parameter, defining the current domain of your app.
      *
-     * @param boolean $delete
+     * @param bool $delete
      */
     protected function saveOutput($delete = true)
     {
         $browser = $this->container->getParameter('beelab_test.browser');
-        $file = $this->container->get('kernel')->getRootDir() . '/../web/test.html';
-        $url = $this->container->getParameter('domain') . '/test.html';
+        $file = $this->container->get('kernel')->getRootDir().'/../web/test.html';
+        $url = $this->container->getParameter('domain').'/test.html';
         if (false !== $profile = $this->client->getProfile()) {
-            $url .= '?' . $profile->getToken();
+            $url .= '?'.$profile->getToken();
         }
         file_put_contents($file, $this->client->getResponse()->getContent());
         if (!empty($browser)) {
-            $process = new Process($browser . ' ' . $url);
+            $process = new Process($browser.' '.$url);
             $process->start();
             sleep(3);
         }
@@ -100,7 +100,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Login
      * See http://blog.bee-lab.net/login-automatico-con-fosuserbundle/
-     * Be sure that $firewall match the entry in your security.yml configuration
+     * Be sure that $firewall match the entry in your security.yml configuration.
      *
      * @param string $username
      * @param string $firewall
@@ -111,16 +111,17 @@ abstract class WebTestCase extends SymfonyWebTestCase
         $user = $userManager->find($username);
         $token = new UsernamePasswordToken($user, null, $firewall, $user->getRoles());
         $session = $this->container->get('session');
-        $session->set('_security_' . $firewall, serialize($token));
+        $session->set('_security_'.$firewall, serialize($token));
         $session->save();
         $cookie = new Cookie($session->getName(), $session->getId());
         $this->client->getCookieJar()->set($cookie);
     }
 
     /**
-     * Get an image file to be used in a form
+     * Get an image file to be used in a form.
      *
-     * @param  int          $file
+     * @param int $file
+     *
      * @return UploadedFile
      */
     protected function getImageFile($file = 0)
@@ -131,9 +132,10 @@ abstract class WebTestCase extends SymfonyWebTestCase
     }
 
     /**
-     * Get a pdf file to be used in a form
+     * Get a pdf file to be used in a form.
      *
-     * @param  int          $file
+     * @param int $file
+     *
      * @return UploadedFile
      */
     protected function getPdfFile($file = 0)
@@ -154,9 +156,10 @@ EOF;
     }
 
     /**
-     * Get a pdf file to be used in a form
+     * Get a pdf file to be used in a form.
      *
-     * @param  int          $file
+     * @param int $file
+     *
      * @return UploadedFile
      */
     protected function getZipFile($file = 0)
@@ -170,9 +173,10 @@ EOF;
     }
 
     /**
-     * Get a txt file to be used in a form
+     * Get a txt file to be used in a form.
      *
-     * @param  int          $file
+     * @param int $file
+     *
      * @return UploadedFile
      */
     protected function getTxtFile($file = 0)
@@ -184,7 +188,7 @@ EOF;
 
     /**
      * Load fixtures as an array of "names"
-     * This is inspired by https://github.com/liip/LiipFunctionalTestBundle
+     * This is inspired by https://github.com/liip/LiipFunctionalTestBundle.
      *
      * @param array  $fixtures  e.g. ['UserData', 'OrderData']
      * @param string $namespace
@@ -194,7 +198,7 @@ EOF;
         $this->em->getConnection()->exec('SET foreign_key_checks = 0');
         $loader = new Loader($this->container);
         foreach ($fixtures as $fixture) {
-            $this->loadFixtureClass($loader, $namespace . $fixture);
+            $this->loadFixtureClass($loader, $namespace.$fixture);
         }
         $executor = new ORMExecutor($this->em, new ORMPurger());
         $executor->execute($loader->getFixtures());
@@ -203,10 +207,10 @@ EOF;
 
     /**
      * Assert that $num mail has been sent
-     * Need $this->client->enableProfiler() before calling
+     * Need $this->client->enableProfiler() before calling.
      *
-     * @param integer $num
-     * @param string  $message
+     * @param int    $num
+     * @param string $message
      */
     protected function assertMailSent($num, $message = '')
     {
@@ -220,25 +224,27 @@ EOF;
 
     /**
      * Get a form field value, from its id
-     * Useful for POSTs
+     * Useful for POSTs.
      *
-     * @param  Crawler $crawler
-     * @param  string  $fieldId
-     * @param  integer $position
+     * @param Crawler $crawler
+     * @param string  $fieldId
+     * @param int     $position
+     *
      * @return string
      */
     protected function getFormValue(Crawler $crawler, $fieldId, $position = 0)
     {
-        return $crawler->filter('#' . $fieldId)->eq($position)->attr('value');
+        return $crawler->filter('#'.$fieldId)->eq($position)->attr('value');
     }
 
     /**
-     * Do an ajax request
+     * Do an ajax request.
      *
-     * @param  string                                $method
-     * @param  string                                $uri
-     * @param  array                                 $params
-     * @param  array                                 $files
+     * @param string $method
+     * @param string $uri
+     * @param array  $params
+     * @param array  $files
+     *
      * @return \Symfony\Component\DomCrawler\Crawler
      */
     protected function ajax($method = 'GET', $uri, array $params = [], array $files = [])
@@ -247,11 +253,12 @@ EOF;
     }
 
     /**
-     * Execute a command and return output
+     * Execute a command and return output.
      *
-     * @param  string $name     Command name (e.g. "app:send")
-     * @param  mixed  $command  Command instannce (e.g. new SendCommand())
-     * @param  array  $options  Possible command options
+     * @param string $name    Command name (e.g. "app:send")
+     * @param mixed  $command Command instannce (e.g. new SendCommand())
+     * @param array  $options Possible command options
+     *
      * @return string
      */
     protected function commandTest($name, $command, array $options = [])
@@ -267,7 +274,7 @@ EOF;
 
     /**
      * Load a single fixture class
-     * (with possible other dependent fixture classes)
+     * (with possible other dependent fixture classes).
      *
      * @param Loader $loader
      * @param string $className
@@ -289,18 +296,19 @@ EOF;
     }
 
     /**
-     * Get a file to be used in a form
+     * Get a file to be used in a form.
      *
-     * @param  int          $file
-     * @param  string       $data
-     * @param  string       $ext
-     * @param  string       $mime
+     * @param int    $file
+     * @param string $data
+     * @param string $ext
+     * @param string $mime
+     *
      * @return UploadedFile
      */
     private function getFile($file, $data, $ext, $mime)
     {
-        $name = 'file_' . $file . '.' . $ext;
-        $path = tempnam(sys_get_temp_dir(), 'sf_test_') . $name;
+        $name = 'file_'.$file.'.'.$ext;
+        $path = tempnam(sys_get_temp_dir(), 'sf_test_').$name;
         file_put_contents($path, base64_decode($data));
 
         return new UploadedFile($path, $name, $mime, 1234);
