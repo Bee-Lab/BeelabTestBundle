@@ -128,3 +128,10 @@ class MyTest extends WebTestCase
   When you need the service container in your fixtures, instead of implementing
   ``Symfony\Component\DependencyInjection\ContainerAwareInterface``, you can extends
   ``Beelab\TestBundle\DataFixtures\AbstractContainerAwareFixture``.
+
+* Get entity by reference
+
+  If you need an entity in a functional test, you can get it by calling ``$this->getReference('refname')``, where
+  ``refname`` is a name of a reference you used inside a fixture. E.g., if you used ``$this->addReference('foo')`` or
+  ``$this->setReference('foo')`` inside one of your fixtures, you can call ``$this->getReference('foo')`` to retrieve
+  the entity you created in that fixture.

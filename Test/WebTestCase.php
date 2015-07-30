@@ -36,6 +36,11 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected $client;
 
     /**
+     * @var \Doctrine\Common\DataFixtures\AbstractFixture
+     */
+    private $fixture;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -270,6 +275,25 @@ EOF;
         $commandTester->execute(array_merge(['command' => $cmd->getName()], $options));
 
         return $commandTester->getDisplay();
+    }
+
+    /**
+     * Get an entity by its fixtures reference name.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    protected function getReference($name)
+    {
+        if (is_null($this->fixture)) {
+            throw new \RuntimeException('Load some fixtures before.');
+        }
+        if (!$this->fixture->hasReference($name)) {
+            throw new \InvalidArgumentException(sprintf('Reference "%s" not found.', $name));
+        }
+
+        return $this->fixture->getReference($name);
     }
 
     /**
