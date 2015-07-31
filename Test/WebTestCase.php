@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -260,19 +261,23 @@ EOF;
     /**
      * Execute a command and return output.
      *
-     * @param string $name    Command name (e.g. "app:send")
-     * @param mixed  $command Command instannce (e.g. new SendCommand())
-     * @param array  $options Possible command options
+     * @param string  $name          Command name (e.g. "app:send")
+     * @param Command $command       Command instance (e.g. new SendCommand())
+     * @param array   $arguments     Possible command arguments and options
+     * @param array   $otherCommands Possible other commands to define
      *
      * @return string
      */
-    protected function commandTest($name, $command, array $options = [])
+    protected function commandTest($name, Command $command, array $arguments = [], array $otherCommands = [])
     {
         $application = new Application($this->client->getKernel());
         $application->add($command);
+        foreach ($otherCommands as $otherCommand) {
+            $application->add($otherCommand);
+        }
         $cmd = $application->find($name);
         $commandTester = new CommandTester($cmd);
-        $commandTester->execute(array_merge(['command' => $cmd->getName()], $options));
+        $commandTester->execute(array_merge(['command' => $cmd->getName()], $arguments));
 
         return $commandTester->getDisplay();
     }
