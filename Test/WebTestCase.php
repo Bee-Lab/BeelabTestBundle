@@ -61,7 +61,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         } else {
             $this->client = static::createClient(['environment' => $environment], [
                 'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW'   => $this->container->getParameter('admin_password'),
+                'PHP_AUTH_PW' => $this->container->getParameter('admin_password'),
             ]);
         }
     }
@@ -322,6 +322,7 @@ EOF;
                 $this->loadFixtureClass($loader, $dependency);
             }
         }
+        $this->fixture = $fixture;
     }
 
     /**
