@@ -198,15 +198,17 @@ EOF;
      *
      * @param array  $fixtures  e.g. ['UserData', 'OrderData']
      * @param string $namespace
+     * @param string $manager
      */
-    protected function loadFixtures(array $fixtures, $namespace = 'AppBundle\\DataFixtures\\ORM\\')
+    protected function loadFixtures(array $fixtures, $namespace = 'AppBundle\\DataFixtures\\ORM\\', $manager = null)
     {
         $this->em->getConnection()->exec('SET foreign_key_checks = 0');
         $loader = new Loader($this->container);
         foreach ($fixtures as $fixture) {
             $this->loadFixtureClass($loader, $namespace.$fixture);
         }
-        $executor = new ORMExecutor($this->em, new ORMPurger());
+        $manager = is_null($manager) ? $this->em : $this->container->get($manager);
+        $executor = new ORMExecutor($manager, new ORMPurger());
         $executor->execute($loader->getFixtures());
         $this->em->getConnection()->exec('SET foreign_key_checks = 1');
     }
