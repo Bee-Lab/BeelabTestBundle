@@ -47,7 +47,7 @@ With this bundle:
 ```php
 <?php
 
-use Beelab\BeelabTest\Test\WebTestCase;
+use Beelab\TestBundle\Test\WebTestCase;
 
 class MyTest extends WebTestCase
 {
