@@ -13,8 +13,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "symfony/framework-bundle": "~2.3",
-        "doctrine/data-fixtures": "1.0.*"
+        "symfony/framework-bundle": "^2.3|^3.0",
+        "doctrine/data-fixtures": "^1.0"
     },
     "autoload": {
         "psr-4": { "Beelab\\TestBundle\\": "" }
