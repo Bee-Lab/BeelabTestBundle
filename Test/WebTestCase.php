@@ -80,7 +80,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Save request output and show it in the browser
      * See http://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
-     * You need a "domain" parameter, defining the current domain of your app.
+     * You can define a "domain" parameter with the current domain of your app.
      *
      * @param bool $delete
      */
@@ -88,7 +88,8 @@ abstract class WebTestCase extends SymfonyWebTestCase
     {
         $browser = $this->container->getParameter('beelab_test.browser');
         $file = $this->container->get('kernel')->getRootDir().'/../web/test.html';
-        $url = $this->container->getParameter('domain').'/test.html';
+        $url = $this->container->hasParameter('domain') ? $this->container->getParameter('domain') : '127.0.0.1:8000';
+        $url .= '/test.html';
         if (false !== $profile = $this->client->getProfile()) {
             $url .= '?'.$profile->getToken();
         }
@@ -110,11 +111,13 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @param string $username
      * @param string $firewall
+     * @param string $service
      */
-    protected function login($username = 'admin1@example.org', $firewall = 'main')
+    protected function login($username = 'admin1@example.org', $firewall = 'main', $service = 'beelab_user.manager')
     {
-        $userManager = $this->container->get('beelab_user.manager');
-        $user = $userManager->find($username);
+        if (is_null($user = $this->container->get($service)->loadUserByUsername($username))) {
+            throw new \InvalidArgumentException(sprintf('Username %s not found.', $username));
+        }
         $token = new UsernamePasswordToken($user, null, $firewall, $user->getRoles());
         $session = $this->container->get('session');
         $session->set('_security_'.$firewall, serialize($token));

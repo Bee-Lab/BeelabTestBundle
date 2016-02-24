@@ -27,7 +27,8 @@ public function registerBundles()
 
 ## Usage
 
-In your functional test class, extend ``Beelab\Test\WebTestCase`` instead of ``Symfony\Bundle\FrameworkBundle\Test\WebTestCase``.
+In your functional test class, extend `Beelab\TestBundle\Test\WebTestCase` instead of
+`Symfony\Bundle\FrameworkBundle\Test\WebTestCase`.
 
 This requires only a change in your ``use`` statements.
 
@@ -73,11 +74,11 @@ class MyTest extends WebTestCase
 
 * Browser output debug
 
-  You can output the content of response in your browser, just calling ``$this->saveOutput``. You need to define a
-  parameter named ``domain``. The output will be save under document root and displayed with browser (by default,
-  ``/usr/bin/firefox``), then the page will be deleted. You can pass ``false`` as argument to prevent page deletion (in
-  this case, you can get it from your document root directory. Don't forget to remove it by hand, then). If you want
-  to change browser path, define it in your configuration:
+  You can output the content of response in your browser, just calling `$this->saveOutput()`. You can define a
+  parameter named `domain`, otherwise standard localhost will be used. The output will be save under document root and
+  displayed with browser (by default, `/usr/bin/firefox`), then the page will be deleted. You can pass `false` as argument
+  to prevent page deletion (in this case, you can get it from your document root directory. Don't forget to remove it by
+  hand, then). If you want to change browser path, define it in your configuration:
   ```yaml
   # app/config/config_test.yml
   beelab_test:
@@ -86,7 +87,10 @@ class MyTest extends WebTestCase
 
 * Automatic login
 
-  This is integrated with [BeelabUserBundle](https://github.com/Bee-Lab/BeelabUserBundle).
+  This is integrated by default with [BeelabUserBundle](https://github.com/Bee-Lab/BeelabUserBundle).
+  Anyway, you can use any user provider, passing the name of your service as third argument.
+  For example, if you want to login users provided by FOSUserBundle in your tests, you can do something like
+  `$this->login('foo', 'main', 'fos_user.user_provider.username');`. For basic usage, just pass the username as first argument.
 
 * Files for forms
 
@@ -96,8 +100,8 @@ class MyTest extends WebTestCase
 
 * Fast fixtures load
 
-  Load fixtures simply with ``$this->loadFixtures(['YourFixtureClassName', 'YourOtherFixtureClassName'])``. Dependencies
-  are resolved, so you don't need to explicitly load all your fixtures.
+  Load fixtures simply with `$this->loadFixtures(['YourFixtureClassName', 'YourOtherFixtureClassName'])`. Dependencies
+  are resolved (as long as you implement `DependentFixtureInterface`), so you don't need to explicitly load all your fixtures.
 
 * Mail sent assertion
 
