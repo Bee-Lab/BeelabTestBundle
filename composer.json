@@ -16,8 +16,14 @@
         "symfony/framework-bundle": "^2.3|^3.0",
         "doctrine/data-fixtures": "^1.0"
     },
+    "require-dev": {
+        "fabpot/php-cs-fixer": "~1.11"
+    },
     "autoload": {
         "psr-4": { "Beelab\\TestBundle\\": "" }
+    },
+    "config": {
+        "bin-dir": "bin"
     },
     "extra": {
         "branch-alias": {
