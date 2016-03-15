@@ -103,6 +103,11 @@ class MyTest extends WebTestCase
   Load fixtures simply with `$this->loadFixtures(['YourFixtureClassName', 'YourOtherFixtureClassName'])`. Dependencies
   are resolved (as long as you implement `DependentFixtureInterface`), so you don't need to explicitly load all your fixtures.
 
+* PHPCR fixtures load
+
+  Load fixtures simply with `$this->loadPhpcrFixtures(['YourFixtureClassName', 'YourOtherFixtureClassName'])`. Dependencies
+  are resolved (as long as you implement `DependentFixtureInterface`), so you don't need to explicitly load all your fixtures.
+
 * Mail sent assertion
 
   Check how many mails has been sent with ``$this->assertMailSent(1)`` (or 2, 3, etc.). You need to call
