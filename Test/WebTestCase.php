@@ -2,8 +2,11 @@
 
 namespace Beelab\TestBundle\Test;
 
+use Doctrine\Bundle\PHPCRBundle\Command\RepositoryInitCommand;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Executor\PHPCRExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\Common\DataFixtures\Purger\PHPCRPurger;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as Loader;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -214,6 +217,33 @@ EOF;
         $executor = new ORMExecutor($manager, new ORMPurger());
         $executor->execute($loader->getFixtures(), $append);
         $this->em->getConnection()->exec('SET foreign_key_checks = 1');
+    }
+
+    /**
+     * Load fixtures as an array of "names"
+     *
+     * @param array  $fixtures  e.g. ['UserData', 'OrderData']
+     * @param string $namespace
+     * @param string $manager
+     */
+    protected function loadPhpcrFixtures(array $fixtures, $namespace = 'AppBundle\\DataFixtures\\PHPCR\\', $manager = null)
+    {
+        if (!$this->container->has('doctrine_phpcr')) {
+            throw new \Exception('Doctrine PHPCR is not installed');
+        }
+
+        $dm = $this->container->get('doctrine_phpcr')->getManager($manager);
+        $loader = new Loader($this->container);
+        foreach ($fixtures as $fixture) {
+            $this->loadFixtureClass($loader, $namespace.$fixture);
+        }
+
+        $this->commandTest('doctrine:phpcr:repository:init', new RepositoryInitCommand());
+
+        $purger = new PHPCRPurger($dm);
+        $initializerManager = $this->container->get('doctrine_phpcr.initializer_manager');
+        $executor = new PHPCRExecutor($dm, $purger, $initializerManager);
+        $executor->execute($loader->getFixtures(), false);
     }
 
     /**
