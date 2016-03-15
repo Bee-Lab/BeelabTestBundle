@@ -204,7 +204,7 @@ EOF;
      * @param string $namespace
      * @param string $manager
      */
-    protected function loadFixtures(array $fixtures, $namespace = 'AppBundle\\DataFixtures\\ORM\\', $manager = null)
+    protected function loadFixtures(array $fixtures, $namespace = 'AppBundle\\DataFixtures\\ORM\\', $manager = null, $append = false)
     {
         $this->em->getConnection()->exec('SET foreign_key_checks = 0');
         $loader = new Loader($this->container);
@@ -213,7 +213,7 @@ EOF;
         }
         $manager = is_null($manager) ? $this->em : $this->container->get($manager);
         $executor = new ORMExecutor($manager, new ORMPurger());
-        $executor->execute($loader->getFixtures());
+        $executor->execute($loader->getFixtures(), $append);
         $this->em->getConnection()->exec('SET foreign_key_checks = 1');
     }
 
