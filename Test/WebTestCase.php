@@ -2,7 +2,6 @@
 
 namespace Beelab\TestBundle\Test;
 
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as Loader;
@@ -323,11 +322,6 @@ EOF;
             return;
         }
         $loader->addFixture($fixture);
-        if ($fixture instanceof DependentFixtureInterface) {
-            foreach ($fixture->getDependencies() as $dependency) {
-                $this->loadFixtureClass($loader, $dependency);
-            }
-        }
         $this->fixture = $fixture;
     }
 
