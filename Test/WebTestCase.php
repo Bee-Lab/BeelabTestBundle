@@ -130,12 +130,14 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * Get an image file to be used in a form.
      *
      * @param int $file
+     * @param strinf $data
      *
      * @return UploadedFile
      */
-    protected function getImageFile($file = 0)
+    protected function getImageFile($file = 0, $data=null)
     {
-        $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
+        
+        if(empty($data)) $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
 
         return $this->getFile($file, $data, 'png', 'image/png');
     }
