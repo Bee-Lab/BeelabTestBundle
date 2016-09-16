@@ -129,15 +129,16 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Get an image file to be used in a form.
      *
-     * @param int $file
+     * @param int    $file
      * @param strinf $data
      *
      * @return UploadedFile
      */
-    protected function getImageFile($file = 0, $data=null)
+    protected function getImageFile($file = 0, $data = null)
     {
-        
-        if(empty($data)) $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
+        if (empty($data)) {
+            $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
+        }
 
         return $this->getFile($file, $data, 'png', 'image/png');
     }
@@ -151,7 +152,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function getPdfFile($file = 0)
     {
-        $data = <<<EOF
+        $data = <<<'EOF'
 JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgP
 DwgL1R5cGUgL1BhZ2VzCiAgICAgL0tpZHMgWzMgMCBSXQogICAgIC9Db3VudCAxCiAgICAgL01lZGlhQm94IFswIDAgMzAwIDE0NF0KICA+PgplbmRvYm
 oKCjMgMCBvYmoKICA8PCAgL1R5cGUgL1BhZ2UKICAgICAgL1BhcmVudCAyIDAgUgogICAgICAvUmVzb3VyY2VzCiAgICAgICA8PCAvRm9udAogICAgICA
@@ -175,7 +176,7 @@ EOF;
      */
     protected function getZipFile($file = 0)
     {
-        $data = <<<EOF
+        $data = <<<'EOF'
 UEsDBAoAAgAAAM5RjEVOGigMAgAAAAIAAAAFABwAaC50eHRVVAkAA/OxilTzsYpUdXgLAAEE6AMAAARkAAAAaApQSwECHgMKAAIAAADOUYxF
 ThooDAIAAAACAAAABQAYAAAAAAABAAAApIEAAAAAaC50eHRVVAUAA/OxilR1eAsAAQToAwAABGQAAABQSwUGAAAAAAEAAQBLAAAAQQAAAAAA
 EOF;
@@ -260,7 +261,7 @@ EOF;
      *
      * @return \Symfony\Component\DomCrawler\Crawler
      */
-    protected function ajax($method = 'GET', $uri, array $params = [], array $files = [])
+    protected function ajax($method, $uri, array $params = [], array $files = [])
     {
         return $this->client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
     }
