@@ -129,7 +129,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Get an image file to be used in a form.
      *
-     * @param int    $file
+     * @param int $file
      *
      * @return UploadedFile
      */
