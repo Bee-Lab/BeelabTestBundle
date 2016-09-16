@@ -130,15 +130,12 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * Get an image file to be used in a form.
      *
      * @param int    $file
-     * @param strinf $data
      *
      * @return UploadedFile
      */
-    protected function getImageFile($file = 0, $data = null)
+    protected function getImageFile($file = 0)
     {
-        if (empty($data)) {
-            $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
-        }
+        $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
 
         return $this->getFile($file, $data, 'png', 'image/png');
     }
@@ -310,6 +307,25 @@ EOF;
     }
 
     /**
+     * Get a file to be used in a form.
+     *
+     * @param int    $file
+     * @param string $data
+     * @param string $ext
+     * @param string $mime
+     *
+     * @return UploadedFile
+     */
+    protected function getFile($file, $data, $ext, $mime)
+    {
+        $name = 'file_'.$file.'.'.$ext;
+        $path = tempnam(sys_get_temp_dir(), 'sf_test_').$name;
+        file_put_contents($path, base64_decode($data));
+
+        return new UploadedFile($path, $name, $mime, 1234);
+    }
+
+    /**
      * Load a single fixture class
      * (with possible other dependent fixture classes).
      *
@@ -326,24 +342,5 @@ EOF;
         }
         $loader->addFixture($fixture);
         $this->fixture = $fixture;
-    }
-
-    /**
-     * Get a file to be used in a form.
-     *
-     * @param int    $file
-     * @param string $data
-     * @param string $ext
-     * @param string $mime
-     *
-     * @return UploadedFile
-     */
-    private function getFile($file, $data, $ext, $mime)
-    {
-        $name = 'file_'.$file.'.'.$ext;
-        $path = tempnam(sys_get_temp_dir(), 'sf_test_').$name;
-        file_put_contents($path, base64_decode($data));
-
-        return new UploadedFile($path, $name, $mime, 1234);
     }
 }
