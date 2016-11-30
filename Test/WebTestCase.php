@@ -56,13 +56,20 @@ abstract class WebTestCase extends SymfonyWebTestCase
             $this->container = $kernel->getContainer();
             $this->em = $this->container->get('doctrine.orm.entity_manager');
         }
-        if (empty(static::$admin)) {
-            $this->client = static::createClient(['environment' => $environment]);
-        } else {
+        if (!empty(static::$admin)) {
+            $error = 'static::$admin is deprecated. Use static::$authUser and static::$authPw instead.';
+            @trigger_error($error, E_USER_DEPRECATED);
             $this->client = static::createClient(['environment' => $environment], [
                 'PHP_AUTH_USER' => 'admin',
                 'PHP_AUTH_PW' => $this->container->getParameter('admin_password'),
             ]);
+        } elseif (!empty(static::$authUser) && !empty(static::$authPw)) {
+            $this->client = static::createClient(['environment' => $environment], [
+                'PHP_AUTH_USER' => static::$authUser,
+                'PHP_AUTH_PW' => static::$authPw,
+            ]);
+        } else {
+            $this->client = static::createClient(['environment' => $environment]);
         }
     }
 
