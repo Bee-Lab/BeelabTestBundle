@@ -71,9 +71,6 @@ class MyTest extends WebTestCase
 
   If you need basic authentication in tests, set static public class properties named `$authUser` and `$authPw`.
   Doing so, `$this->client` will be authenticated with such user and password.
-  **Notice**: an older version of this bundle was using a static proprerty named `$admin` and a password took
-  from a parameter named `admin_password`. Such old behavior is still working, but it's deprecated and it will
-  removed in a future version.
 
 * Browser output debug
 

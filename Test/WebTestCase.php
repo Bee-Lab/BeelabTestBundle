@@ -56,14 +56,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
             $this->container = $kernel->getContainer();
             $this->em = $this->container->get('doctrine.orm.entity_manager');
         }
-        if (!empty(static::$admin)) {
-            $error = 'static::$admin is deprecated. Use static::$authUser and static::$authPw instead.';
-            @trigger_error($error, E_USER_DEPRECATED);
-            $this->client = static::createClient(['environment' => $environment], [
-                'PHP_AUTH_USER' => 'admin',
-                'PHP_AUTH_PW' => $this->container->getParameter('admin_password'),
-            ]);
-        } elseif (!empty(static::$authUser) && !empty(static::$authPw)) {
+        if (!empty(static::$authUser) && !empty(static::$authPw)) {
             $this->client = static::createClient(['environment' => $environment], [
                 'PHP_AUTH_USER' => static::$authUser,
                 'PHP_AUTH_PW' => static::$authPw,
@@ -91,7 +84,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @param bool $delete
      */
-    protected function saveOutput($delete = true)
+    protected function saveOutput(bool $delete = true)
     {
         $browser = $this->container->getParameter('beelab_test.browser');
         $file = $this->container->get('kernel')->getRootDir().'/../web/test.html';
@@ -120,7 +113,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * @param string $firewall
      * @param string $service
      */
-    protected function login($username = 'admin1@example.org', $firewall = 'main', $service = 'beelab_user.manager')
+    protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $service = 'beelab_user.manager')
     {
         if (is_null($user = $this->container->get($service)->loadUserByUsername($username))) {
             throw new \InvalidArgumentException(sprintf('Username %s not found.', $username));
@@ -140,7 +133,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @return UploadedFile
      */
-    protected function getImageFile($file = 0)
+    protected function getImageFile(int $file = 0): UploadedFile
     {
         $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
 
@@ -154,7 +147,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @return UploadedFile
      */
-    protected function getPdfFile($file = 0)
+    protected function getPdfFile(int $file = 0): UploadedFile
     {
         $data = <<<'EOF'
 JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgP
@@ -178,7 +171,7 @@ EOF;
      *
      * @return UploadedFile
      */
-    protected function getZipFile($file = 0)
+    protected function getZipFile(int $file = 0): UploadedFile
     {
         $data = <<<'EOF'
 UEsDBAoAAgAAAM5RjEVOGigMAgAAAAIAAAAFABwAaC50eHRVVAkAA/OxilTzsYpUdXgLAAEE6AMAAARkAAAAaApQSwECHgMKAAIAAADOUYxF
@@ -195,7 +188,7 @@ EOF;
      *
      * @return UploadedFile
      */
-    protected function getTxtFile($file = 0)
+    protected function getTxtFile(int $file = 0): UploadedFile
     {
         $data = 'Lorem ipsum dolor sit amet';
 
@@ -209,8 +202,9 @@ EOF;
      * @param array  $fixtures  e.g. ['UserData', 'OrderData']
      * @param string $namespace
      * @param string $manager
+     * @param bool   $append
      */
-    protected function loadFixtures(array $fixtures, $namespace = 'AppBundle\\DataFixtures\\ORM\\', $manager = null, $append = false)
+    protected function loadFixtures(array $fixtures, string $namespace = 'AppBundle\\DataFixtures\\ORM\\', string $manager = null, bool $append = false)
     {
         $this->em->getConnection()->exec('SET foreign_key_checks = 0');
         $loader = new Loader($this->container);
@@ -230,7 +224,7 @@ EOF;
      * @param int    $num
      * @param string $message
      */
-    protected function assertMailSent($num, $message = '')
+    protected function assertMailSent(int $num, string $message = '')
     {
         if (false !== $profile = $this->client->getProfile()) {
             $collector = $profile->getCollector('swiftmailer');
@@ -250,7 +244,7 @@ EOF;
      *
      * @return string
      */
-    protected function getFormValue(Crawler $crawler, $fieldId, $position = 0)
+    protected function getFormValue(Crawler $crawler, string $fieldId, int $position = 0): string
     {
         return $crawler->filter('#'.$fieldId)->eq($position)->attr('value');
     }
@@ -263,9 +257,9 @@ EOF;
      * @param array  $params
      * @param array  $files
      *
-     * @return \Symfony\Component\DomCrawler\Crawler
+     * @return Crawler
      */
-    protected function ajax($method, $uri, array $params = [], array $files = [])
+    protected function ajax(string $method, string $uri, array $params = [], array $files = []): Crawler
     {
         return $this->client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
     }
@@ -280,7 +274,7 @@ EOF;
      *
      * @return string
      */
-    protected function commandTest($name, Command $command, array $arguments = [], array $otherCommands = [])
+    protected function commandTest(string $name, Command $command, array $arguments = [], array $otherCommands = []): string
     {
         $application = new Application($this->client->getKernel());
         $application->add($command);
@@ -301,7 +295,7 @@ EOF;
      *
      * @return mixed
      */
-    protected function getReference($name)
+    protected function getReference(string $name)
     {
         if (is_null($this->fixture)) {
             throw new \RuntimeException('Load some fixtures before.');
@@ -323,7 +317,7 @@ EOF;
      *
      * @return UploadedFile
      */
-    protected function getFile($file, $data, $ext, $mime)
+    protected function getFile(int $file, string $data, string $ext, string $mime): UploadedFile
     {
         $name = 'file_'.$file.'.'.$ext;
         $path = tempnam(sys_get_temp_dir(), 'sf_test_').$name;
@@ -339,7 +333,7 @@ EOF;
      * @param Loader $loader
      * @param string $className
      */
-    private function loadFixtureClass(Loader $loader, $className)
+    private function loadFixtureClass(Loader $loader, string $className)
     {
         $fixture = new $className();
         if ($loader->hasFixture($fixture)) {
