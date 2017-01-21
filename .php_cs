@@ -1,13 +1,15 @@
 <?php
 // see https://github.com/FriendsOfPHP/PHP-CS-Fixer
 
-$finder = Symfony\CS\Finder\DefaultFinder::create()
-    ->exclude('vendor')
+$finder = PhpCsFixer\Finder::create()
     ->in([__DIR__])
 ;
 
-return Symfony\CS\Config\Config::create()
-    ->setUsingCache(true)
-    ->fixers(['-psr0', 'ordered_use', 'short_array_syntax'])
-    ->finder($finder)
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@Symfony' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'ordered_imports' => true,
+    ])
+    ->setFinder($finder)
 ;
