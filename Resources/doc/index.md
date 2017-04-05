@@ -88,9 +88,11 @@ class MyTest extends WebTestCase
 * Automatic login
 
   This is integrated by default with [BeelabUserBundle](https://github.com/Bee-Lab/BeelabUserBundle).
-  Anyway, you can use any user provider, passing the name of your service as third argument.
+  Anyway, you can use any user provider, passing the name of service as third argument.
   For example, if you want to login users provided by FOSUserBundle in your tests, you can do something like
-  `$this->login('foo', 'main', 'fos_user.user_provider.username');`. For basic usage, just pass the username as first argument.
+  `$this->login('foo', 'main', 'fos_user.user_provider.username');`.
+  Another notable service you can use is Symfony's built-in `security.user.provider.concrete.in_memory`.
+  For basic usage, just pass the username as first argument.
 
 * Files for forms
 
