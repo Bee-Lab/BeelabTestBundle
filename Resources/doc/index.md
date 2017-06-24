@@ -18,7 +18,7 @@ Enable bundle in the kernel:
 public function registerBundles()
 {
     // ...
-    if (in_array($this->getEnvironment(), ['dev', 'test'])) {
+    if ('test' === $this->getEnvironment()) {
         // ...
         $bundles[] = new Beelab\TestBundle\BeelabTestBundle();
     }
@@ -141,4 +141,4 @@ class MyTest extends WebTestCase
   If you need an entity in a functional test, you can get it by calling `$this->getReference('refname')`, where
   `refname` is a name of a reference you used inside a fixture. E.g., if you used `$this->addReference('foo')` or
   `$this->setReference('foo')` inside one of your fixtures, you can call `$this->getReference('foo')` to retrieve
-  the entity you created in that fixture. **Warning**: this method is working only if you are loading fixtures during    test execution.
+  the entity you created in that fixture. ⚠️️ **Warning**: this method is working only if you are loading fixtures during test execution.
