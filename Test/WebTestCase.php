@@ -4,6 +4,7 @@ namespace Beelab\TestBundle\Test;
 
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as Loader;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -11,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
@@ -22,7 +24,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 abstract class WebTestCase extends SymfonyWebTestCase
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var ContainerInterface
      */
     protected $container;
 
@@ -78,6 +80,22 @@ abstract class WebTestCase extends SymfonyWebTestCase
     }
 
     /**
+     * @return ContainerInterface
+     */
+    protected function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
+
+    /**
+     * @return Client
+     */
+    protected function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    /**
      * Save request output and show it in the browser
      * See http://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
      * You can define a "domain" parameter with the current domain of your app.
@@ -111,11 +129,12 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @param string $username
      * @param string $firewall
-     * @param string $service
+     * @param string $repository
+     * @throws \InvalidArgumentException
      */
-    protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $service = 'beelab_user.manager')
+    protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager')
     {
-        if (is_null($user = $this->container->get($service)->loadUserByUsername($username))) {
+        if (is_null($user = $this->container->get($repository)->loadUserByUsername($username))) {
             throw new \InvalidArgumentException(sprintf('Username %s not found.', $username));
         }
         $token = new UsernamePasswordToken($user, null, $firewall, $user->getRoles());
@@ -201,20 +220,28 @@ EOF;
      *
      * @param array  $fixtures  e.g. ['UserData', 'OrderData']
      * @param string $namespace
-     * @param string $manager
+     * @param string $manager_service
      * @param bool   $append
+     * @throws \Exception
      */
-    protected function loadFixtures(array $fixtures, string $namespace = 'AppBundle\\DataFixtures\\ORM\\', string $manager = null, bool $append = false)
+    protected function loadFixtures(array $fixtures, string $namespace = 'AppBundle\\DataFixtures\\ORM\\', string $manager_service = null, bool $append = false)
     {
-        $this->em->getConnection()->exec('SET foreign_key_checks = 0');
+        if (!is_null($manager_service)) {
+            $manager = $this->container->get($manager_service);
+            if (!$manager instanceof EntityManagerInterface) {
+                throw new \Exception(sprintf('The service "%s" is not an EntityManager', $manager));
+            }
+        } else {
+            $manager = $this->em;
+        }
+        $manager->getConnection()->exec('SET foreign_key_checks = 0');
         $loader = new Loader($this->container);
         foreach ($fixtures as $fixture) {
             $this->loadFixtureClass($loader, $namespace.$fixture);
         }
-        $manager = is_null($manager) ? $this->em : $this->container->get($manager);
         $executor = new ORMExecutor($manager, new ORMPurger());
         $executor->execute($loader->getFixtures(), $append);
-        $this->em->getConnection()->exec('SET foreign_key_checks = 1');
+        $manager->getConnection()->exec('SET foreign_key_checks = 1');
     }
 
     /**
@@ -259,7 +286,7 @@ EOF;
      *
      * @return Crawler
      */
-    protected function ajax(string $method, string $uri, array $params = [], array $files = []): Crawler
+    protected function ajax(string $method = 'GET', string $uri, array $params = [], array $files = []): Crawler
     {
         return $this->client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
     }
@@ -310,14 +337,14 @@ EOF;
     /**
      * Get a file to be used in a form.
      *
-     * @param int    $file
+     * @param string $file
      * @param string $data
      * @param string $ext
      * @param string $mime
      *
      * @return UploadedFile
      */
-    protected function getFile(int $file, string $data, string $ext, string $mime): UploadedFile
+    protected function getFile(string $file, string $data, string $ext, string $mime): UploadedFile
     {
         $name = 'file_'.$file.'.'.$ext;
         $path = tempnam(sys_get_temp_dir(), 'sf_test_').$name;
