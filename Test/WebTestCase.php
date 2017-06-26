@@ -106,13 +106,13 @@ abstract class WebTestCase extends SymfonyWebTestCase
     {
         $browser = $this->container->getParameter('beelab_test.browser');
         $file = $this->container->get('kernel')->getRootDir().'/../web/test.html';
-        $url = $this->container->hasParameter('domain') ? $this->container->getParameter('domain') : '127.0.0.1:8000';
-        $url .= '/test.html';
-        if (false !== $profile = $this->client->getProfile()) {
-            $url .= '?'.$profile->getToken();
-        }
         file_put_contents($file, $this->client->getResponse()->getContent());
         if (!empty($browser)) {
+            $url = $this->container->hasParameter('domain') ? $this->container->getParameter('domain') : '127.0.0.1:8000';
+            $url .= '/test.html';
+            if (false !== $profile = $this->client->getProfile()) {
+                $url .= '?'.$profile->getToken();
+            }
             $process = new Process($browser.' '.$url);
             $process->start();
             sleep(3);
@@ -130,6 +130,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * @param string $username
      * @param string $firewall
      * @param string $repository
+     *
      * @throws \InvalidArgumentException
      */
     protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager')
@@ -218,18 +219,23 @@ EOF;
      * Load fixtures as an array of "names"
      * This is inspired by https://github.com/liip/LiipFunctionalTestBundle.
      *
-     * @param array  $fixtures  e.g. ['UserData', 'OrderData']
+     * @param array  $fixtures       e.g. ['UserData', 'OrderData']
      * @param string $namespace
-     * @param string $manager_service
+     * @param string $managerService
      * @param bool   $append
-     * @throws \Exception
+     *
+     * @throws \InvalidArgumentException
      */
-    protected function loadFixtures(array $fixtures, string $namespace = 'AppBundle\\DataFixtures\\ORM\\', string $manager_service = null, bool $append = false)
-    {
-        if (!is_null($manager_service)) {
-            $manager = $this->container->get($manager_service);
+    protected function loadFixtures(
+        array $fixtures,
+        string $namespace = 'AppBundle\\DataFixtures\\ORM\\',
+        string $managerService = null,
+        bool $append = false
+    ) {
+        if (!is_null($managerService)) {
+            $manager = $this->container->get($managerService);
             if (!$manager instanceof EntityManagerInterface) {
-                throw new \Exception(sprintf('The service "%s" is not an EntityManager', $manager));
+                throw new \InvalidArgumentException(sprintf('The service "%s" is not an EntityManager', $manager));
             }
         } else {
             $manager = $this->em;

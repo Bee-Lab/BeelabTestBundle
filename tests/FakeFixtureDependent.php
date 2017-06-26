@@ -11,7 +11,7 @@ class FakeFixtureDependent implements DependentFixtureInterface, FixtureInterfac
     public function getDependencies()
     {
         return [
-            'Beelab\TestBundle\FakeFixture'
+            'Beelab\TestBundle\FakeFixture',
         ];
     }
 

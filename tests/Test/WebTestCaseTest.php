@@ -6,7 +6,7 @@ use org\bovigo\vfs\vfsStream;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class WebTestCaseTest extends \PHPUnit_Framework_TestCase
+class WebTestCaseTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Beelab\TestBundle\Test\WebTestCase
@@ -36,7 +36,7 @@ class WebTestCaseTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->mock = $this->getMock('Beelab\TestBundle\Test\WebTestCase', null);
+        $this->mock = $this->createMock('Beelab\TestBundle\Test\WebTestCase', null);
 
         $class = new \ReflectionClass($this->mock);
 
@@ -52,7 +52,7 @@ class WebTestCaseTest extends \PHPUnit_Framework_TestCase
     public function testSaveOutput()
     {
         $vfs = vfsStream::setup('proj', null, [
-            'web' => []
+            'web' => [],
         ]);
 
         /** @var \Symfony\Component\HttpKernel\KernelInterface $kernel */
@@ -68,7 +68,7 @@ class WebTestCaseTest extends \PHPUnit_Framework_TestCase
             ->with('kernel')
             ->willReturn($kernel);
 
-        $response = $this->getMock('Symfony\Component\HttpFoundation\Response');
+        $response = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $response
             ->expects($this->once())
             ->method('getContent')
@@ -93,7 +93,7 @@ class WebTestCaseTest extends \PHPUnit_Framework_TestCase
 
     public function testLogin()
     {
-        $user = $this->getMock('stdClass', ['getRoles', '__toString']);
+        $user = $this->createMock('stdClass', ['getRoles', '__toString']);
         $user
             ->expects($this->once())
             ->method('getRoles')
@@ -103,20 +103,20 @@ class WebTestCaseTest extends \PHPUnit_Framework_TestCase
             ->method('__toString')
             ->willReturn('user');
 
-        $repository = $this->getMock('Symfony\Component\Security\Core\User\UserProviderInterface\UserProviderInterface', ['loadUserByUsername']);
+        $repository = $this->createMock('Symfony\Component\Security\Core\User\UserProviderInterface\UserProviderInterface', ['loadUserByUsername']);
         $repository
             ->expects($this->once())
             ->method('loadUserByUsername')
             ->willReturn($user);
 
-        $session = $this->getMock('stdClass', ['getId', 'getName', 'set', 'save']);
+        $session = $this->createMock('stdClass', ['getId', 'getName', 'set', 'save']);
 
         $this->container
             ->method('get')
             ->withConsecutive(['beelab_user.manager'], ['session'])
             ->will($this->onConsecutiveCalls($repository, $session));
 
-        $cookieJar = $this->getMock('stdClass', ['set']);
+        $cookieJar = $this->createMock('stdClass', ['set']);
 
         $this->client
             ->method('getCookieJar')
@@ -204,9 +204,9 @@ class WebTestCaseTest extends \PHPUnit_Framework_TestCase
             ->expects($this->exactly(2))
             ->method('loadFixtureClass');
 
-        $connection = $this->getMock('stdClass', ['exec']);
-        $eventManager = $this->getMock('stdClass', ['addEventSubscriber']);
-        $manager = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $connection = $this->createMock('stdClass', ['exec']);
+        $eventManager = $this->createMock('stdClass', ['addEventSubscriber']);
+        $manager = $this->createMock('Doctrine\ORM\EntityManagerInterface');
         $manager
             ->method('getConnection')
             ->willReturn($connection);
@@ -248,7 +248,7 @@ class WebTestCaseTest extends \PHPUnit_Framework_TestCase
 
     public function testAssertMailSent()
     {
-        $swiftmailerProfiler = $this->getMock('stdClass', ['getMessageCount']);
+        $swiftmailerProfiler = $this->createMock('stdClass', ['getMessageCount']);
         $swiftmailerProfiler
             ->expects($this->once())
             ->method('getMessageCount')
