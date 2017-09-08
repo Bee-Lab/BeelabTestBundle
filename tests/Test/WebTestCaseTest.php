@@ -141,9 +141,10 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         // Call `getFile` method
         $method = new \ReflectionMethod($this->mock, 'getFile');
         $method->setAccessible(true);
-        $file = $method->invoke($this->mock, 'test', 'text', 'txt', 'text/txt');
+        $file = $method->invoke($this->mock, 'test', 'text', 'csv', 'text/csv');
 
         $this->assertInstanceOf(UploadedFile::class, $file);
+        $this->assertEquals('text/plain', $file->getMimeType());
     }
 
     public function testGetImageFile()
@@ -154,6 +155,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $file = $method->invoke($this->mock);
 
         $this->assertInstanceOf(UploadedFile::class, $file);
+        $this->assertEquals('image/png', $file->getMimeType());
     }
 
     public function testGetPdfFile()
@@ -164,6 +166,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $file = $method->invoke($this->mock);
 
         $this->assertInstanceOf(UploadedFile::class, $file);
+        $this->assertEquals('application/pdf', $file->getMimeType());
     }
 
     public function testGetZipFile()
@@ -174,6 +177,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $file = $method->invoke($this->mock);
 
         $this->assertInstanceOf(UploadedFile::class, $file);
+        $this->assertEquals('application/zip', $file->getMimeType());
     }
 
     public function testGetTxtFile()
@@ -184,6 +188,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $file = $method->invoke($this->mock);
 
         $this->assertInstanceOf(UploadedFile::class, $file);
+        $this->assertEquals('text/plain', $file->getMimeType());
     }
 
     public function testLoadFixtureClass()

@@ -29,7 +29,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected $container;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var EntityManagerInterface
      */
     protected $em;
 
@@ -52,7 +52,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         if (getenv('TEST_TOKEN') !== false) {
             $environment = 'test'.getenv('TEST_TOKEN');
         }
-        if (empty($this->container)) {
+        if (null === $this->container) {
             $kernel = static::createKernel(['environment' => $environment]);
             $kernel->boot();
             $this->container = $kernel->getContainer();
@@ -73,7 +73,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function tearDown()
     {
-        if (!is_null($this->em)) {
+        if (null === $this->em) {
             $this->em->getConnection()->close();
         }
         parent::tearDown();
@@ -115,9 +115,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
             }
             $process = new Process($browser.' '.$url);
             $process->start();
-            sleep(3);
         }
         if ($delete) {
+            sleep(3);
             unlink($file);
         }
     }
@@ -135,7 +135,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager')
     {
-        if (is_null($user = $this->container->get($repository)->loadUserByUsername($username))) {
+        if (null === $user = $this->container->get($repository)->loadUserByUsername($username)) {
             throw new \InvalidArgumentException(sprintf('Username %s not found.', $username));
         }
         $token = new UsernamePasswordToken($user, null, $firewall, $user->getRoles());
@@ -232,7 +232,7 @@ EOF;
         string $managerService = null,
         bool $append = false
     ) {
-        if (!is_null($managerService)) {
+        if (null === $managerService) {
             $manager = $this->container->get($managerService);
             if (!$manager instanceof EntityManagerInterface) {
                 throw new \InvalidArgumentException(sprintf('The service "%s" is not an EntityManager', $manager));
@@ -292,7 +292,7 @@ EOF;
      *
      * @return Crawler
      */
-    protected function ajax(string $method = 'GET', string $uri, array $params = [], array $files = []): Crawler
+    protected function ajax(string $method, string $uri, array $params = [], array $files = []): Crawler
     {
         return $this->client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
     }
@@ -330,7 +330,7 @@ EOF;
      */
     protected function getReference(string $name)
     {
-        if (is_null($this->fixture)) {
+        if (null === $this->fixture) {
             throw new \RuntimeException('Load some fixtures before.');
         }
         if (!$this->fixture->hasReference($name)) {
