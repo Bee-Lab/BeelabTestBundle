@@ -48,7 +48,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function setUp()
     {
-        $environment = 'test';
+        $environment = $_SERVER['APP_ENV'] ?? 'test';
         if (getenv('TEST_TOKEN') !== false) {
             $environment = 'test'.getenv('TEST_TOKEN');
         }

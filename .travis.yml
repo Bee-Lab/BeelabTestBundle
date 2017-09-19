@@ -3,6 +3,7 @@ language: php
 php:
     - 7.0
     - 7.1
+    - 7.2
     - nightly
 
 cache:
@@ -19,6 +20,7 @@ matrix:
         - php: nightly
           env: SYMFONY_VERSION=3.3.* SYMFONY_DEPRECATIONS_HELPER=strict
     allow_failures:
+        - php: 7.2
         - php: nightly
 
 env:
