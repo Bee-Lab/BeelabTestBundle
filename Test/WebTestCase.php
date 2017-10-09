@@ -84,6 +84,8 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function getContainer(): ContainerInterface
     {
+        @trigger_error('getContainer() method is deprecated. Use $this->container directly.', E_USER_DEPRECATED);
+
         return $this->container;
     }
 
@@ -92,6 +94,8 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function getClient(): Client
     {
+        @trigger_error('getClient() method is deprecated. Use $this->client directly.', E_USER_DEPRECATED);
+
         return $this->client;
     }
 
@@ -105,7 +109,8 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected function saveOutput(bool $delete = true)
     {
         $browser = $this->container->getParameter('beelab_test.browser');
-        $file = $this->container->get('kernel')->getRootDir().'/../web/test.html';
+        $rootDir = $this->container->get('kernel')->getRootDir().'/../';
+        $file = is_dir($rootDir.'web/') ? $rootDir.'web/test.html' : $rootDir.'public/test.html';
         file_put_contents($file, $this->client->getResponse()->getContent());
         if (!empty($browser)) {
             $url = $this->container->hasParameter('domain') ? $this->container->getParameter('domain') : '127.0.0.1:8000';
