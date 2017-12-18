@@ -4,7 +4,7 @@ namespace Beelab\TestBundle\Test;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\Swiftmailer\DataCollector\MessageDataCollector;
+use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -130,6 +130,8 @@ class WebTestCaseTest extends TestCase
             ->willReturn($cookieJar);
 
         $cookieJar->expects($this->any())->method('get');
+
+        $session->expects($this->any())->method('getName')->willReturn('foo');
 
         // Call `login` method
         $method = new \ReflectionMethod($this->mock, 'login');
