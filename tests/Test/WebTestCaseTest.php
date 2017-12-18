@@ -3,12 +3,13 @@
 namespace Beelab\TestBundle\Test;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Swiftmailer\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class WebTestCaseTest extends \PHPUnit\Framework\TestCase
+class WebTestCaseTest extends TestCase
 {
     /**
      * @var \Beelab\TestBundle\Test\WebTestCase

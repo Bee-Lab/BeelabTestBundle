@@ -46,10 +46,10 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $environment = $_SERVER['APP_ENV'] ?? 'test';
-        if (getenv('TEST_TOKEN') !== false) {
+        if (false !== getenv('TEST_TOKEN')) {
             $environment = 'test'.getenv('TEST_TOKEN');
         }
         if (null === $this->container) {
@@ -71,7 +71,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         if (null === $this->em) {
             $this->em->getConnection()->close();
@@ -106,7 +106,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @param bool $delete
      */
-    protected function saveOutput(bool $delete = true)
+    protected function saveOutput(bool $delete = true): void
     {
         $browser = $this->container->getParameter('beelab_test.browser');
         $rootDir = $this->container->get('kernel')->getRootDir().'/../';
@@ -138,7 +138,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @throws \InvalidArgumentException
      */
-    protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager')
+    protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager'): void
     {
         if (null === $user = $this->container->get($repository)->loadUserByUsername($username)) {
             throw new \InvalidArgumentException(sprintf('Username %s not found.', $username));
@@ -236,7 +236,7 @@ EOF;
         string $namespace = 'AppBundle\\DataFixtures\\ORM\\',
         string $managerService = null,
         bool $append = false
-    ) {
+    ): void {
         if (null === $managerService) {
             $manager = $this->container->get($managerService);
             if (!$manager instanceof EntityManagerInterface) {
@@ -262,7 +262,7 @@ EOF;
      * @param int    $num
      * @param string $message
      */
-    protected function assertMailSent(int $num, string $message = '')
+    protected function assertMailSent(int $num, string $message = ''): void
     {
         if (false !== $profile = $this->client->getProfile()) {
             $collector = $profile->getCollector('swiftmailer');
@@ -371,7 +371,7 @@ EOF;
      * @param Loader $loader
      * @param string $className
      */
-    private function loadFixtureClass(Loader $loader, string $className)
+    private function loadFixtureClass(Loader $loader, string $className): void
     {
         $fixture = new $className();
         if ($loader->hasFixture($fixture)) {
