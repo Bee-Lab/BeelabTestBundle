@@ -229,6 +229,7 @@ EOF;
      * @param string $managerService
      * @param bool   $append
      *
+     * @throws \Doctrine\DBAL\DBALException
      * @throws \InvalidArgumentException
      */
     protected function loadFixtures(

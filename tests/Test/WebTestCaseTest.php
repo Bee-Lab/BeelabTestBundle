@@ -1,13 +1,21 @@
 <?php
 
-namespace Beelab\TestBundle\Test;
+namespace Beelab\TestBundle\Tests;
 
+use Beelab\TestBundle\Test\WebTestCase;
+use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Profiler\Profile;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Bundle\FrameworkBundle\Client;
+
 
 class WebTestCaseTest extends TestCase
 {
@@ -31,15 +39,9 @@ class WebTestCaseTest extends TestCase
      */
     protected function setUp()
     {
-        $this->container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->client = $this->getMockBuilder('Symfony\Bundle\FrameworkBundle\Client')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->mock = $this->createMock('Beelab\TestBundle\Test\WebTestCase', null);
+        $this->container = $this->getMockBuilder(ContainerInterface::class)->disableOriginalConstructor()->getMock();
+        $this->client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
+        $this->mock = $this->createMock(WebTestCase::class);
 
         $class = new \ReflectionClass($this->mock);
 
@@ -107,7 +109,7 @@ class WebTestCaseTest extends TestCase
             ->willReturn('user');
 
         $repository = $this
-            ->getMockBuilder('Symfony\Component\Security\Core\User\UserProviderInterface')
+            ->getMockBuilder(UserProviderInterface::class)
             ->setMethods(['loadUserByUsername', 'refreshUser', 'supportsClass'])
             ->getMock()
         ;
@@ -196,20 +198,18 @@ class WebTestCaseTest extends TestCase
 
     public function testLoadFixtureClass()
     {
-        $loader = $this->getMockBuilder('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $loader = $this->getMockBuilder(ContainerAwareLoader::class)->disableOriginalConstructor()->getMock();
 
         // Call `loadFixtureClass` method
         $method = new \ReflectionMethod($this->mock, 'loadFixtureClass');
         $method->setAccessible(true);
-        $method->invoke($this->mock, $loader, 'Beelab\\TestBundle\\FakeFixtureDependent');
+        $method->invoke($this->mock, $loader, 'Beelab\\TestBundle\\Tests\\FakeFixtureDependent');
 
-        $property = new \ReflectionProperty('Beelab\TestBundle\Test\WebTestCase', 'fixture');
+        $property = new \ReflectionProperty(WebTestCase::class, 'fixture');
         $property->setAccessible(true);
         $fixture = $property->getValue($this->mock);
 
-        $this->assertInstanceOf('Beelab\TestBundle\FakeFixtureDependent', $fixture);
+        $this->assertInstanceOf(FakeFixtureDependent::class, $fixture);
     }
 
     public function testLoadFixtures()
@@ -222,7 +222,7 @@ class WebTestCaseTest extends TestCase
 
         $connection = $this->createMock('stdClass', ['exec']);
         $eventManager = $this->createMock('stdClass', ['addEventSubscriber']);
-        $manager = $this->createMock('Doctrine\ORM\EntityManagerInterface');
+        $manager = $this->createMock(EntityManagerInterface::class);
         $manager
             ->method('getConnection')
             ->willReturn($connection);
@@ -271,9 +271,7 @@ class WebTestCaseTest extends TestCase
             ->method('getMessageCount')
             ->willReturn(1);
 
-        $profiler = $this->getMockBuilder('Symfony\Component\HttpKernel\Profiler\Profile')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $profiler = $this->getMockBuilder(Profile::class)->disableOriginalConstructor()->getMock();
         $profiler
             ->expects($this->once())
             ->method('getCollector')
