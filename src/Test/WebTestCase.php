@@ -109,7 +109,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected function saveOutput(bool $delete = true): void
     {
         $browser = $this->container->getParameter('beelab_test.browser');
-        $rootDir = $this->container->get('kernel')->getRootDir().'/../';
+        $rootDir = $this->container->getParameter('kernel.project_dir').'/';
         $file = is_dir($rootDir.'web/') ? $rootDir.'web/test.html' : $rootDir.'public/test.html';
         file_put_contents($file, $this->client->getResponse()->getContent());
         if (!empty($browser)) {
@@ -129,8 +129,8 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     /**
      * Login
-     * See http://blog.bee-lab.net/login-automatico-con-fosuserbundle/
-     * Be sure that $firewall match the entry in your security.yml configuration.
+     * See https://web.archive.org/web/20131002151908/http://blog.bee-lab.net/login-automatico-con-fosuserbundle/
+     * Be sure that $firewall match the entry in your security.yaml configuration.
      *
      * @param string $username
      * @param string $firewall
