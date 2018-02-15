@@ -109,7 +109,11 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected function saveOutput(bool $delete = true)
     {
         $browser = $this->container->getParameter('beelab_test.browser');
-        $rootDir = $this->container->get('kernel')->getRootDir().'/../';
+        if ($this->container->hasParameter('kernel.project_dir')) {
+            $rootDir = $this->container->getParameter('kernel.project_dir') . '/';
+        } else {
+            $rootDir = $this->container->get('kernel')->getRootDir().'/../';
+        }
         $file = is_dir($rootDir.'web/') ? $rootDir.'web/test.html' : $rootDir.'public/test.html';
         file_put_contents($file, $this->client->getResponse()->getContent());
         if (!empty($browser)) {
