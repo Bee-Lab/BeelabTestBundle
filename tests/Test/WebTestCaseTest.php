@@ -54,7 +54,7 @@ class WebTestCaseTest extends TestCase
     public function testSaveOutput(): void
     {
         $vfs = vfsStream::setup('proj', null, [
-            'web' => [],
+            'public' => [],
         ]);
 
         /** @var \Symfony\Component\HttpKernel\KernelInterface $kernel */
