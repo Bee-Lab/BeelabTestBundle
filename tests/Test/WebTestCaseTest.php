@@ -34,10 +34,7 @@ class WebTestCaseTest extends TestCase
      */
     protected $client;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->container = $this->getMockBuilder(ContainerInterface::class)->disableOriginalConstructor()->getMock();
         $this->client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
@@ -54,7 +51,7 @@ class WebTestCaseTest extends TestCase
         $property->setValue($this->mock, $this->client);
     }
 
-    public function testSaveOutput()
+    public function testSaveOutput(): void
     {
         $vfs = vfsStream::setup('proj', null, [
             'web' => [],
@@ -65,7 +62,7 @@ class WebTestCaseTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $kernel->method('getRootDir')
+        $kernel->method('getProjectDir')
             ->willReturn(vfsStream::url('proj/app'));
 
         $this->container
@@ -92,11 +89,11 @@ class WebTestCaseTest extends TestCase
         $method->setAccessible(true);
         $method->invoke($this->mock, false);
 
-        $this->assertNotNull($file = $vfs->getChild('web/test.html'));
+        $this->assertNotNull($file = $vfs->getChild('public/test.html'));
         $this->assertEquals('Response content', $file->getContent());
     }
 
-    public function testLogin()
+    public function testLogin(): void
     {
         $user = $this->getMockBuilder('stdClass')->setMethods(['getRoles', '__toString'])->getMock();
         $user
@@ -141,7 +138,7 @@ class WebTestCaseTest extends TestCase
         $method->invoke($this->mock);
     }
 
-    public function testGetFile()
+    public function testGetFile(): void
     {
         // Call `getFile` method
         $method = new \ReflectionMethod($this->mock, 'getFile');
@@ -152,7 +149,7 @@ class WebTestCaseTest extends TestCase
         $this->assertEquals('text/plain', $file->getMimeType());
     }
 
-    public function testGetImageFile()
+    public function testGetImageFile(): void
     {
         // Call `getImageFile` method
         $method = new \ReflectionMethod($this->mock, 'getImageFile');
@@ -163,7 +160,7 @@ class WebTestCaseTest extends TestCase
         $this->assertEquals('image/png', $file->getMimeType());
     }
 
-    public function testGetPdfFile()
+    public function testGetPdfFile(): void
     {
         // Call `getPdfFile` method
         $method = new \ReflectionMethod($this->mock, 'getPdfFile');
@@ -174,7 +171,7 @@ class WebTestCaseTest extends TestCase
         $this->assertEquals('application/pdf', $file->getMimeType());
     }
 
-    public function testGetZipFile()
+    public function testGetZipFile(): void
     {
         // Call `getZipFile` method
         $method = new \ReflectionMethod($this->mock, 'getZipFile');
@@ -185,7 +182,7 @@ class WebTestCaseTest extends TestCase
         $this->assertEquals('application/zip', $file->getMimeType());
     }
 
-    public function testGetTxtFile()
+    public function testGetTxtFile(): void
     {
         // Call `getTxtFile` method
         $method = new \ReflectionMethod($this->mock, 'getTxtFile');
@@ -196,7 +193,7 @@ class WebTestCaseTest extends TestCase
         $this->assertEquals('text/plain', $file->getMimeType());
     }
 
-    public function testLoadFixtureClass()
+    public function testLoadFixtureClass(): void
     {
         $loader = $this->getMockBuilder(ContainerAwareLoader::class)->disableOriginalConstructor()->getMock();
 
@@ -212,7 +209,7 @@ class WebTestCaseTest extends TestCase
         $this->assertInstanceOf(FakeFixtureDependent::class, $fixture);
     }
 
-    public function testLoadFixtures()
+    public function testLoadFixtures(): void
     {
         $this->markTestIncomplete('Need to mock `loadFixtureClass` method correctly');
 
@@ -241,7 +238,7 @@ class WebTestCaseTest extends TestCase
         $method->invoke($this->mock, ['Fixture1', 'Fixture2'], 'My\\NameSpace\\', 'my.manager');
     }
 
-    public function testAjax()
+    public function testAjax(): void
     {
         $this->client
             ->expects($this->once())
@@ -257,12 +254,12 @@ class WebTestCaseTest extends TestCase
         $this->assertInstanceOf(Crawler::class, $result);
     }
 
-    public function testCommandTest()
+    public function testCommandTest(): void
     {
         $this->markTestIncomplete('Not implemented');
     }
 
-    public function testAssertMailSent()
+    public function testAssertMailSent(): void
     {
         $this->markTestIncomplete('cannot mock static call to "assertEquals"');
         $swiftmailerProfiler = $this->createMock(MessageDataCollector::class);
