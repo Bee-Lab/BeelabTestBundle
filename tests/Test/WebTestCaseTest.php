@@ -58,7 +58,7 @@ class WebTestCaseTest extends TestCase
         ]);
 
         /** @var \Symfony\Component\HttpKernel\KernelInterface $kernel */
-        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\KernelInterface')
+        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Kernel')
             ->disableOriginalConstructor()
             ->getMock();
 
