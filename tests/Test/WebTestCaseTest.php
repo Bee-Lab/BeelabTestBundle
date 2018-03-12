@@ -36,7 +36,7 @@ class WebTestCaseTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->container = $this->getMockBuilder(ContainerInterface::class)->disableOriginalConstructor()->getMock();
+        $this->container = $this->createMock(ContainerInterface::class);
         $this->client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
         $this->mock = $this->createMock(WebTestCase::class);
 
@@ -53,22 +53,14 @@ class WebTestCaseTest extends TestCase
 
     public function testSaveOutput(): void
     {
-        $vfs = vfsStream::setup('proj', null, [
-            'public' => [],
-        ]);
-
-        /** @var \Symfony\Component\HttpKernel\KernelInterface $kernel */
-        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\Kernel')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $kernel->method('getProjectDir')
-            ->willReturn(vfsStream::url('proj/app'));
+        $vfs = vfsStream::setup('proj', null, ['public' => []]);
 
         $this->container
-            ->method('get')
-            ->with('kernel')
-            ->willReturn($kernel);
+            ->expects($this->at(1))
+            ->method('getParameter')
+            ->with('kernel.project_dir')
+            ->willReturn(vfsStream::url('proj'))
+        ;
 
         $response = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $response
