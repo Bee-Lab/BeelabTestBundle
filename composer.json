@@ -17,6 +17,7 @@
         "symfony/dependency-injection": "^3.4|^4.0"
     },
     "require-dev": {
+        "doctrine/lexer": "^1.0.1",
         "doctrine/orm": "^2.4",
         "friendsofphp/php-cs-fixer": "^2.0",
         "mikey179/vfsStream": "^1.6",
