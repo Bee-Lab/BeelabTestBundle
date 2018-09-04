@@ -1,6 +1,18 @@
 UPGRADE
 =======
 
+From 2.x to 3.0
+---------------
+
+Since Symfony Test class introduced a static `$container` property, we had to remove our
+own non-static property. So, if you were using `$this->container` in your tests, you need
+to change it in `static::$container`.
+
+Also, methods previously deprecated were removed:
+
+* `$this->getContainer()` (use `static::$container` instead)
+* `$this->getClient()` (use `$this->client` instead)
+
 From 1.x to 2.0
 ---------------
 

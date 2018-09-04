@@ -16,10 +16,7 @@ abstract class AbstractContainerAwareFixture extends AbstractFixture implements 
      */
     protected $container;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setContainer(ContainerInterface $container = null)
+    public function setContainer(ContainerInterface $container = null): void
     {
         $this->container = $container;
     }

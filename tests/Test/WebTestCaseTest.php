@@ -6,6 +6,8 @@ use Beelab\TestBundle\Test\WebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -13,9 +15,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
-use Symfony\Bundle\FrameworkBundle\Client;
-
 
 class WebTestCaseTest extends TestCase
 {

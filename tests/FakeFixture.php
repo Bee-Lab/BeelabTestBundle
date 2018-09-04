@@ -7,7 +7,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class FakeFixture implements FixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
     }
 }

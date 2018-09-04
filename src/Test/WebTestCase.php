@@ -12,22 +12,13 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
-/**
- * WebTestCase.
- */
 abstract class WebTestCase extends SymfonyWebTestCase
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
     /**
      * @var EntityManagerInterface
      */
@@ -43,20 +34,17 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     private $fixture;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         $environment = $_SERVER['APP_ENV'] ?? 'test';
-        if (false !== getenv('TEST_TOKEN')) {
-            $environment = 'test'.getenv('TEST_TOKEN');
+        if (false !== \getenv('TEST_TOKEN')) {
+            $environment = 'test'.\getenv('TEST_TOKEN');
         }
-        if (null === $this->container) {
+        if (null === static::$container) {
             $kernel = static::createKernel(['environment' => $environment]);
             $kernel->boot();
-            $this->container = $kernel->getContainer();
-            $this->em = $this->container->get('doctrine.orm.entity_manager');
+            static::$container = $kernel->getContainer();
+            $this->em = static::$container->get('doctrine.orm.entity_manager');
         }
         if (!empty(static::$authUser) && !empty(static::$authPw)) {
             $this->client = static::createClient(['environment' => $environment], [
@@ -68,35 +56,12 @@ abstract class WebTestCase extends SymfonyWebTestCase
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function tearDown(): void
     {
         if (null === $this->em) {
             $this->em->getConnection()->close();
         }
         parent::tearDown();
-    }
-
-    /**
-     * @return ContainerInterface
-     */
-    protected function getContainer(): ContainerInterface
-    {
-        @trigger_error('getContainer() method is deprecated. Use $this->container directly.', E_USER_DEPRECATED);
-
-        return $this->container;
-    }
-
-    /**
-     * @return Client
-     */
-    protected function getClient(): Client
-    {
-        @trigger_error('getClient() method is deprecated. Use $this->client directly.', E_USER_DEPRECATED);
-
-        return $this->client;
     }
 
     /**
@@ -108,12 +73,12 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function saveOutput(bool $delete = true): void
     {
-        $browser = $this->container->getParameter('beelab_test.browser');
-        $rootDir = $this->container->getParameter('kernel.project_dir').'/';
-        $file = is_dir($rootDir.'web/') ? $rootDir.'web/test.html' : $rootDir.'public/test.html';
-        file_put_contents($file, $this->client->getResponse()->getContent());
+        $browser = static::$container->getParameter('beelab_test.browser');
+        $rootDir = static::$container->getParameter('kernel.project_dir').'/';
+        $file = \is_dir($rootDir.'web/') ? $rootDir.'web/test.html' : $rootDir.'public/test.html';
+        \file_put_contents($file, $this->client->getResponse()->getContent());
         if (!empty($browser)) {
-            $url = $this->container->hasParameter('domain') ? $this->container->getParameter('domain') : '127.0.0.1:8000';
+            $url = static::$container->hasParameter('domain') ? static::$container->getParameter('domain') : '127.0.0.1:8000';
             $url .= '/test.html';
             if (false !== $profile = $this->client->getProfile()) {
                 $url .= '?'.$profile->getToken();
@@ -122,8 +87,8 @@ abstract class WebTestCase extends SymfonyWebTestCase
             $process->start();
         }
         if ($delete) {
-            sleep(3);
-            unlink($file);
+            \sleep(3);
+            \unlink($file);
         }
     }
 
@@ -140,12 +105,12 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager'): void
     {
-        if (null === $user = $this->container->get($repository)->loadUserByUsername($username)) {
-            throw new \InvalidArgumentException(sprintf('Username %s not found.', $username));
+        if (null === $user = static::$container->get($repository)->loadUserByUsername($username)) {
+            throw new \InvalidArgumentException(\sprintf('Username %s not found.', $username));
         }
         $token = new UsernamePasswordToken($user, null, $firewall, $user->getRoles());
-        $session = $this->container->get('session');
-        $session->set('_security_'.$firewall, serialize($token));
+        $session = static::$container->get('session');
+        $session->set('_security_'.$firewall, \serialize($token));
         $session->save();
         $cookie = new Cookie($session->getName(), $session->getId());
         $this->client->getCookieJar()->set($cookie);
@@ -234,20 +199,20 @@ EOF;
      */
     protected function loadFixtures(
         array $fixtures,
-        string $namespace = 'AppBundle\\DataFixtures\\ORM\\',
+        string $namespace = 'App\\DataFixtures\\ORM\\',
         string $managerService = null,
         bool $append = false
     ): void {
         if (null === $managerService) {
-            $manager = $this->container->get($managerService);
+            $manager = static::$container->get($managerService);
             if (!$manager instanceof EntityManagerInterface) {
-                throw new \InvalidArgumentException(sprintf('The service "%s" is not an EntityManager', $manager));
+                throw new \InvalidArgumentException(\sprintf('The service "%s" is not an EntityManager', $manager));
             }
         } else {
             $manager = $this->em;
         }
         $manager->getConnection()->exec('SET foreign_key_checks = 0');
-        $loader = new Loader($this->container);
+        $loader = new Loader(static::$container);
         foreach ($fixtures as $fixture) {
             $this->loadFixtureClass($loader, $namespace.$fixture);
         }
@@ -322,7 +287,7 @@ EOF;
         }
         $cmd = $application->find($name);
         $commandTester = new CommandTester($cmd);
-        $commandTester->execute(array_merge(['command' => $cmd->getName()], $arguments));
+        $commandTester->execute(\array_merge(['command' => $cmd->getName()], $arguments));
 
         return $commandTester->getDisplay();
     }
@@ -340,7 +305,7 @@ EOF;
             throw new \RuntimeException('Load some fixtures before.');
         }
         if (!$this->fixture->hasReference($name)) {
-            throw new \InvalidArgumentException(sprintf('Reference "%s" not found.', $name));
+            throw new \InvalidArgumentException(\sprintf('Reference "%s" not found.', $name));
         }
 
         return $this->fixture->getReference($name);
@@ -359,8 +324,8 @@ EOF;
     protected function getFile(string $file, string $data, string $ext, string $mime): UploadedFile
     {
         $name = 'file_'.$file.'.'.$ext;
-        $path = tempnam(sys_get_temp_dir(), 'sf_test_').$name;
-        file_put_contents($path, base64_decode($data));
+        $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
+        \file_put_contents($path, \base64_decode($data));
 
         return new UploadedFile($path, $name, $mime, 1234);
     }

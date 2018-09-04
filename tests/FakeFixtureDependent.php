@@ -15,7 +15,7 @@ class FakeFixtureDependent implements DependentFixtureInterface, FixtureInterfac
         ];
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
     }
 }
