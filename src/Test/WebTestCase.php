@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 abstract class WebTestCase extends SymfonyWebTestCase
 {
     /**
-     * @var EntityManagerInterface
+     * @var EntityManagerInterface|null
      */
     protected $em;
 
@@ -30,7 +30,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected $client;
 
     /**
-     * @var \Doctrine\Common\DataFixtures\AbstractFixture
+     * @var \Doctrine\Common\DataFixtures\AbstractFixture|null
      */
     private $fixture;
 
@@ -44,7 +44,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
             $kernel = static::createKernel(['environment' => $environment]);
             $kernel->boot();
             static::$container = $kernel->getContainer();
-            $this->em = static::$container->get('doctrine.orm.entity_manager');
+            if (static::$container->has('doctrine.orm.entity_manager')) {
+                $this->em = static::$container->get('doctrine.orm.entity_manager');
+            }
         }
         if (!empty(static::$authUser) && !empty(static::$authPw)) {
             $this->client = static::createClient(['environment' => $environment], [
@@ -58,7 +60,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     protected function tearDown(): void
     {
-        if (null === $this->em) {
+        if (null !== $this->em) {
             $this->em->getConnection()->close();
         }
         parent::tearDown();
