@@ -27,7 +27,7 @@
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^7.3 || ^8.0",
         "symfony/doctrine-bridge": "^4.0",
-        "symfony/framework-bundle": "^4.1@dev",
+        "symfony/framework-bundle": "^4.1",
         "symfony/security-core": "^4.0",
         "symfony/swiftmailer-bundle": "^3.2"
     },
