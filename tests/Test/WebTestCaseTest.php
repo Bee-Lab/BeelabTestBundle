@@ -271,7 +271,7 @@ class WebTestCaseTest extends TestCase
             ->method('getProfile')
             ->willReturn($profiler);
 
-        $this->mock->method('assertEquals')->will($this->returnValue(true));
+        $this->mock->method('assertEquals')->willReturn(true);
 
         // Call `assertMailSent` method
         $method = new \ReflectionMethod($this->mock, 'assertMailSent');

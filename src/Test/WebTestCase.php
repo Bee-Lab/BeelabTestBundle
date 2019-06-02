@@ -254,7 +254,7 @@ EOF;
     {
         if (null !== $crawler) {
             $msg = 'Passing Crawler is deprecated. Pass null for now, in next major version parameter will be removed.';
-            @trigger_error($msg, E_USER_DEPRECATED);
+            @\trigger_error($msg, E_USER_DEPRECATED);
         }
         $crawler = $crawler ?? $this->client->getCrawler();
 
