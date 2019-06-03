@@ -1,6 +1,13 @@
 UPGRADE
 =======
 
+From 3.0 to 4.0
+---------------
+
+Since Symfony Test class introduced a static `$client` property, we had to move our
+own non-static property. So, you need to change every occurrence of `$this->client`
+to `static::$client` in your tests.
+
 From 2.x to 3.0
 ---------------
 

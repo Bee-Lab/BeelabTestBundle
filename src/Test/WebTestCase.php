@@ -27,7 +27,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * @var Client
      */
-    protected $client;
+    protected static $client;
 
     /**
      * @var \Doctrine\Common\DataFixtures\AbstractFixture|null
@@ -49,12 +49,12 @@ abstract class WebTestCase extends SymfonyWebTestCase
             }
         }
         if (!empty(static::$authUser) && !empty(static::$authPw)) {
-            $this->client = static::createClient(['environment' => $environment], [
+            self::$client = static::createClient(['environment' => $environment], [
                 'PHP_AUTH_USER' => static::$authUser,
                 'PHP_AUTH_PW' => static::$authPw,
             ]);
         } else {
-            $this->client = static::createClient(['environment' => $environment]);
+            self::$client = static::createClient(['environment' => $environment]);
         }
     }
 
@@ -78,11 +78,11 @@ abstract class WebTestCase extends SymfonyWebTestCase
         $browser = static::$container->getParameter('beelab_test.browser');
         $rootDir = static::$container->getParameter('kernel.project_dir').'/';
         $file = \is_dir($rootDir.'web/') ? $rootDir.'web/test.html' : $rootDir.'public/test.html';
-        \file_put_contents($file, $this->client->getResponse()->getContent());
+        \file_put_contents($file, self::$client->getResponse()->getContent());
         if (!empty($browser)) {
             $url = static::$container->hasParameter('domain') ? static::$container->getParameter('domain') : '127.0.0.1:8000';
             $url .= '/test.html';
-            if (false !== $profile = $this->client->getProfile()) {
+            if (false !== $profile = self::$client->getProfile()) {
                 $url .= '?'.$profile->getToken();
             }
             $process = new Process($browser.' '.$url);
@@ -115,7 +115,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         $session->set('_security_'.$firewall, \serialize($token));
         $session->save();
         $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
+        self::$client->getCookieJar()->set($cookie);
     }
 
     /**
@@ -225,14 +225,14 @@ EOF;
 
     /**
      * Assert that $num mail has been sent
-     * Need $this->client->enableProfiler() before calling.
+     * Need self::$client->enableProfiler() before calling.
      *
      * @param int    $num
      * @param string $message
      */
     protected function assertMailSent(int $num, string $message = ''): void
     {
-        if (false !== $profile = $this->client->getProfile()) {
+        if (false !== $profile = self::$client->getProfile()) {
             $collector = $profile->getCollector('swiftmailer');
             $this->assertEquals($num, $collector->getMessageCount(), $message);
         } else {
@@ -256,7 +256,7 @@ EOF;
             $msg = 'Passing Crawler is deprecated. Pass null for now, in next major version parameter will be removed.';
             @\trigger_error($msg, E_USER_DEPRECATED);
         }
-        $crawler = $crawler ?? $this->client->getCrawler();
+        $crawler = $crawler ?? self::$client->getCrawler();
 
         return $crawler->filter('#'.$fieldId)->eq($position)->attr('value');
     }
@@ -271,9 +271,9 @@ EOF;
      *
      * @return Crawler
      */
-    protected function ajax(string $method, string $uri, array $params = [], array $files = []): Crawler
+    protected static function ajax(string $method, string $uri, array $params = [], array $files = []): Crawler
     {
-        return $this->client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
+        return self::$client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
     }
 
     /**
@@ -288,7 +288,7 @@ EOF;
      */
     protected function commandTest(string $name, Command $command, array $arguments = [], array $otherCommands = []): string
     {
-        $application = new Application($this->client->getKernel());
+        $application = new Application(self::$client->getKernel());
         $application->add($command);
         foreach ($otherCommands as $otherCommand) {
             $application->add($otherCommand);

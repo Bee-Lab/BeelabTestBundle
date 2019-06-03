@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class WebTestCaseTest extends TestCase
+final class WebTestCaseTest extends TestCase
 {
     /**
      * @var \Beelab\TestBundle\Test\WebTestCase

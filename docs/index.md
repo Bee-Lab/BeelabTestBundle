@@ -60,7 +60,7 @@ class MyTest extends WebTestCase
 
 * Default client
 
-  You don't need to create a `$client` for every single test. You can use `$this->client` instead.
+  You don't need to create a `$client` for every single test. You can use `self::$client` instead.
 
 * Support for paratest
 
@@ -70,7 +70,7 @@ class MyTest extends WebTestCase
 * Support for basic authentication
 
   If you need basic authentication in tests, set static public class properties named `$authUser` and `$authPw`.
-  Doing so, `$this->client` will be authenticated with such user and password.
+  Doing so, `self::$client` will be authenticated with such user and password.
 
 * Browser output debug
 
@@ -109,12 +109,12 @@ class MyTest extends WebTestCase
 * Mail sent assertion
 
   Check how many mails has been sent with `$this->assertMailSent(1)` (or 2, 3, etc.). You need to call
-  `$this->client->enableProfiler()` before.
+  `$self::client->enableProfiler()` before.
 
 * Fast ajax calls
 
-  `$this->ajax($method, $uri)` is a convenient shortcut for
-  `$this->client->request($method, $uri, [], [], ['HTTP_X-Requested-With' => 'XMLHttpRequest'])`. Of course, you
+  `self::ajax($method, $uri)` is a convenient shortcut for
+  `self::$client->request($method, $uri, [], [], ['HTTP_X-Requested-With' => 'XMLHttpRequest'])`. Of course, you
   can also pass POST and FILES parameters using 3rd and 4th arguments.
 
 * Test commands
