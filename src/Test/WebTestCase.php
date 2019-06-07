@@ -244,21 +244,14 @@ EOF;
      * Get a form field value, from its id
      * Useful for POSTs.
      *
-     * @param Crawler|null $crawler
      * @param string       $fieldId
      * @param int          $position
      *
      * @return string
      */
-    protected function getFormValue(?Crawler $crawler, string $fieldId, int $position = 0): string
+    protected function getFormValue(string $fieldId, int $position = 0): string
     {
-        if (null !== $crawler) {
-            $msg = 'Passing Crawler is deprecated. Pass null for now, in next major version parameter will be removed.';
-            @\trigger_error($msg, E_USER_DEPRECATED);
-        }
-        $crawler = $crawler ?? self::$client->getCrawler();
-
-        return $crawler->filter('#'.$fieldId)->eq($position)->attr('value');
+        return self::$client->getCrawler()->filter('#'.$fieldId)->eq($position)->attr('value');
     }
 
     /**

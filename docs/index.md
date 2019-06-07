@@ -9,21 +9,7 @@ Run from terminal:
 $ composer require --dev beelab/test-bundle
 ```
 
-Enable bundle in the kernel:
-
-```php
-<?php
-// app/AppKernel.php
-
-public function registerBundles()
-{
-    // ...
-    if ('test' === $this->getEnvironment()) {
-        // ...
-        $bundles[] = new Beelab\TestBundle\BeelabTestBundle();
-    }
-}
-```
+Bundle should be enabled automatically by Flex.
 
 ## Usage
 

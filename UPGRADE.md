@@ -6,7 +6,12 @@ From 3.0 to 4.0
 
 Since Symfony Test class introduced a static `$client` property, we had to move our
 own non-static property. So, you need to change every occurrence of `$this->client`
-to `static::$client` in your tests.
+to `self::$client` (or `static::$client`) in your tests.
+
+You cannot pass `$crawler` as first parameter of method `getFormValue` anymore.
+Such use of parameter was deprecated in version 3, so it has been removed now.
+
+Method `ajax` is now static. Instead of `$this->ajax(...)`, you need to use `self::ajax(...)`
 
 From 2.x to 3.0
 ---------------
