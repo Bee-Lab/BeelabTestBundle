@@ -110,13 +110,11 @@ class MyTest extends WebTestCase
 
 * Form values shortcut
 
-  If you need to retrieve the value of a form field, you can use `$this->getFormValue(null, 'form_field')`. This
+  If you need to retrieve the value of a form field, you can use `$this->getFormValue('form_field')`. This
   is useful for retrieving CSRF token values or select values. In case of a select, note that you need to add `option`
   after your field's id, and you can pass a third optional parameter with the position. If, for example, you want to
   retrieve the value of your second option in a `bar` field of a `foo` form (maybe beacuse the first one is empty),
-  you can do `$this->getFormValue(null, 'foo_bar option', 1)`
-  ⚠️️ **Warning**: passing a `Crawler` instance as first parameter of this method is now deprecated. For now, you have
-  to pass `null` as first parameter. In next major version, first parameter will be removed.
+  you can do `$this->getFormValue('foo_bar option', 1)`
 
 * AbstractContainerAwareFixture
 
