@@ -24,7 +24,7 @@ With standard Symfony tests:
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class MyTest extends WebTestCase
+final class MyTest extends WebTestCase
 {
     // ...
 }
@@ -36,7 +36,7 @@ With this bundle:
 
 use Beelab\TestBundle\Test\WebTestCase;
 
-class MyTest extends WebTestCase
+final class MyTest extends WebTestCase
 {
     // ...
 }
@@ -66,7 +66,7 @@ class MyTest extends WebTestCase
   to prevent page deletion (in this case, you can get it from your document root directory. Don't forget to remove it by
   hand, then). If you want to change browser path, define it in your configuration:
   ```yaml
-  # app/config/config_test.yml
+  # config/packages/test/beelab_test.yaml
   beelab_test:
       browser: /usr/local/bin/chrome
   ```
@@ -95,7 +95,7 @@ class MyTest extends WebTestCase
 * Mail sent assertion
 
   Check how many mails has been sent with `$this->assertMailSent(1)` (or 2, 3, etc.). You need to call
-  `$self::client->enableProfiler()` before.
+  `$self::client->enableProfiler()` before. Currently, this is working only with SwiftMailer.
 
 * Fast ajax calls
 
