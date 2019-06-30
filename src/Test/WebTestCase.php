@@ -244,8 +244,8 @@ EOF;
      * Get a form field value, from its id
      * Useful for POSTs.
      *
-     * @param string       $fieldId
-     * @param int          $position
+     * @param string $fieldId
+     * @param int    $position
      *
      * @return string
      */
