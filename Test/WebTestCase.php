@@ -115,7 +115,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         if (!empty($browser)) {
             $url = $this->container->hasParameter('domain') ? $this->container->getParameter('domain') : '127.0.0.1:8000';
             $url .= '/test.html';
-            if (false !== $profile = $this->client->getProfile()) {
+            if (false !== $profile = $this->client->getProfile() && null !== $profile) {
                 $url .= '?'.$profile->getToken();
             }
             $process = new Process($browser.' '.$url);
