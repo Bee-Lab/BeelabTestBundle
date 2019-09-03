@@ -1,14 +1,23 @@
 <?php
 
-namespace Beelab\TestBundle\Test;
+namespace Beelab\TestBundle\Tests;
 
+use Beelab\TestBundle\Test\WebTestCase;
+use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
-use Symfony\Bridge\Swiftmailer\DataCollector\MessageDataCollector;
+use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Profiler\Profile;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Bundle\FrameworkBundle\Client;
 
-class WebTestCaseTest extends \PHPUnit\Framework\TestCase
+
+class WebTestCaseTest extends TestCase
 {
     /**
      * @var \Beelab\TestBundle\Test\WebTestCase
@@ -25,20 +34,11 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
      */
     protected $client;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->client = $this->getMockBuilder('Symfony\Bundle\FrameworkBundle\Client')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->mock = $this->createMock('Beelab\TestBundle\Test\WebTestCase', null);
+        $this->container = $this->createMock(ContainerInterface::class);
+        $this->client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
+        $this->mock = $this->createMock(WebTestCase::class);
 
         $class = new \ReflectionClass($this->mock);
 
@@ -51,24 +51,16 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $property->setValue($this->mock, $this->client);
     }
 
-    public function testSaveOutput()
+    public function testSaveOutput(): void
     {
-        $vfs = vfsStream::setup('proj', null, [
-            'web' => [],
-        ]);
-
-        /** @var \Symfony\Component\HttpKernel\KernelInterface $kernel */
-        $kernel = $this->getMockBuilder('Symfony\Component\HttpKernel\KernelInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $kernel->method('getRootDir')
-            ->willReturn(vfsStream::url('proj/app'));
+        $vfs = vfsStream::setup('proj', null, ['public' => []]);
 
         $this->container
-            ->method('get')
-            ->with('kernel')
-            ->willReturn($kernel);
+            ->expects($this->at(1))
+            ->method('getParameter')
+            ->with('kernel.project_dir')
+            ->willReturn(vfsStream::url('proj'))
+        ;
 
         $response = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $response
@@ -89,11 +81,11 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $method->setAccessible(true);
         $method->invoke($this->mock, false);
 
-        $this->assertNotNull($file = $vfs->getChild('web/test.html'));
+        $this->assertNotNull($file = $vfs->getChild('public/test.html'));
         $this->assertEquals('Response content', $file->getContent());
     }
 
-    public function testLogin()
+    public function testLogin(): void
     {
         $user = $this->getMockBuilder('stdClass')->setMethods(['getRoles', '__toString'])->getMock();
         $user
@@ -106,7 +98,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
             ->willReturn('user');
 
         $repository = $this
-            ->getMockBuilder('Symfony\Component\Security\Core\User\UserProviderInterface')
+            ->getMockBuilder(UserProviderInterface::class)
             ->setMethods(['loadUserByUsername', 'refreshUser', 'supportsClass'])
             ->getMock()
         ;
@@ -130,13 +122,15 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
 
         $cookieJar->expects($this->any())->method('get');
 
+        $session->expects($this->any())->method('getName')->willReturn('foo');
+
         // Call `login` method
         $method = new \ReflectionMethod($this->mock, 'login');
         $method->setAccessible(true);
         $method->invoke($this->mock);
     }
 
-    public function testGetFile()
+    public function testGetFile(): void
     {
         // Call `getFile` method
         $method = new \ReflectionMethod($this->mock, 'getFile');
@@ -147,7 +141,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('text/plain', $file->getMimeType());
     }
 
-    public function testGetImageFile()
+    public function testGetImageFile(): void
     {
         // Call `getImageFile` method
         $method = new \ReflectionMethod($this->mock, 'getImageFile');
@@ -158,7 +152,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('image/png', $file->getMimeType());
     }
 
-    public function testGetPdfFile()
+    public function testGetPdfFile(): void
     {
         // Call `getPdfFile` method
         $method = new \ReflectionMethod($this->mock, 'getPdfFile');
@@ -169,7 +163,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('application/pdf', $file->getMimeType());
     }
 
-    public function testGetZipFile()
+    public function testGetZipFile(): void
     {
         // Call `getZipFile` method
         $method = new \ReflectionMethod($this->mock, 'getZipFile');
@@ -180,7 +174,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('application/zip', $file->getMimeType());
     }
 
-    public function testGetTxtFile()
+    public function testGetTxtFile(): void
     {
         // Call `getTxtFile` method
         $method = new \ReflectionMethod($this->mock, 'getTxtFile');
@@ -191,25 +185,23 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('text/plain', $file->getMimeType());
     }
 
-    public function testLoadFixtureClass()
+    public function testLoadFixtureClass(): void
     {
-        $loader = $this->getMockBuilder('Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $loader = $this->getMockBuilder(ContainerAwareLoader::class)->disableOriginalConstructor()->getMock();
 
         // Call `loadFixtureClass` method
         $method = new \ReflectionMethod($this->mock, 'loadFixtureClass');
         $method->setAccessible(true);
-        $method->invoke($this->mock, $loader, 'Beelab\\TestBundle\\FakeFixtureDependent');
+        $method->invoke($this->mock, $loader, 'Beelab\\TestBundle\\Tests\\FakeFixtureDependent');
 
-        $property = new \ReflectionProperty('Beelab\TestBundle\Test\WebTestCase', 'fixture');
+        $property = new \ReflectionProperty(WebTestCase::class, 'fixture');
         $property->setAccessible(true);
         $fixture = $property->getValue($this->mock);
 
-        $this->assertInstanceOf('Beelab\TestBundle\FakeFixtureDependent', $fixture);
+        $this->assertInstanceOf(FakeFixtureDependent::class, $fixture);
     }
 
-    public function testLoadFixtures()
+    public function testLoadFixtures(): void
     {
         $this->markTestIncomplete('Need to mock `loadFixtureClass` method correctly');
 
@@ -219,7 +211,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
 
         $connection = $this->createMock('stdClass', ['exec']);
         $eventManager = $this->createMock('stdClass', ['addEventSubscriber']);
-        $manager = $this->createMock('Doctrine\ORM\EntityManagerInterface');
+        $manager = $this->createMock(EntityManagerInterface::class);
         $manager
             ->method('getConnection')
             ->willReturn($connection);
@@ -238,7 +230,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $method->invoke($this->mock, ['Fixture1', 'Fixture2'], 'My\\NameSpace\\', 'my.manager');
     }
 
-    public function testAjax()
+    public function testAjax(): void
     {
         $this->client
             ->expects($this->once())
@@ -254,12 +246,12 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Crawler::class, $result);
     }
 
-    public function testCommandTest()
+    public function testCommandTest(): void
     {
         $this->markTestIncomplete('Not implemented');
     }
 
-    public function testAssertMailSent()
+    public function testAssertMailSent(): void
     {
         $this->markTestIncomplete('cannot mock static call to "assertEquals"');
         $swiftmailerProfiler = $this->createMock(MessageDataCollector::class);
@@ -268,9 +260,7 @@ class WebTestCaseTest extends \PHPUnit\Framework\TestCase
             ->method('getMessageCount')
             ->willReturn(1);
 
-        $profiler = $this->getMockBuilder('Symfony\Component\HttpKernel\Profiler\Profile')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $profiler = $this->getMockBuilder(Profile::class)->disableOriginalConstructor()->getMock();
         $profiler
             ->expects($this->once())
             ->method('getCollector')

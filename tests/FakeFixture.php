@@ -1,6 +1,6 @@
 <?php
 
-namespace Beelab\TestBundle;
+namespace Beelab\TestBundle\Tests;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;

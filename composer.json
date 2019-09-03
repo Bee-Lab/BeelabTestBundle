@@ -4,7 +4,7 @@
     "description": "A test library for Symfony framework",
     "keywords": ["Symfony", "test"],
     "homepage": "https://github.com/bee-lab",
-    "license": "LGPL-3.0",
+    "license": "LGPL-3.0-or-later",
     "authors": [
         {
             "name": "Massimiliano Arione",
@@ -12,27 +12,28 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": "^7.1",
         "doctrine/data-fixtures": "^1.2",
-        "symfony/dependency-injection": "^2.8.18|^3.2"
+        "symfony/dependency-injection": "^3.4"
     },
     "require-dev": {
+        "doctrine/lexer": "^1.0.1",
         "doctrine/orm": "^2.4",
         "friendsofphp/php-cs-fixer": "^2.0",
         "mikey179/vfsStream": "^1.6",
-        "phpunit/phpunit": "^6.0",
-        "symfony/browser-kit": "^2.8.18|^3.2",
-        "symfony/doctrine-bridge": "^2.8.18|^3.2",
-        "symfony/dom-crawler": "^2.8.18|^3.2",
-        "symfony/framework-bundle": "^2.8.18|^3.2",
-        "symfony/security-core": "^2.8.18|^3.2",
-        "symfony/swiftmailer-bridge": "^2.8.18|^3.2"
+        "phpunit/phpunit": "^6.5|^7.0",
+        "symfony/browser-kit": "^3.4",
+        "symfony/doctrine-bridge": "^3.4",
+        "symfony/dom-crawler": "^3.4",
+        "symfony/framework-bundle": "^3.4",
+        "symfony/security-core": "^3.4",
+        "symfony/swiftmailer-bundle": "^3.1"
     },
     "autoload": {
-        "psr-4": { "Beelab\\TestBundle\\": "" }
+        "psr-4": { "Beelab\\TestBundle\\": "src/" }
     },
     "autoload-dev": {
-        "psr-4": { "Beelab\\TestBundle\\": "tests/" }
+        "psr-4": { "Beelab\\TestBundle\\Tests\\": "tests/" }
     },
     "config": {
         "bin-dir": "bin",
@@ -40,7 +41,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.1.x-dev"
+            "dev-master": "2.2.x-dev"
         }
     }
 }
