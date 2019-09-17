@@ -328,7 +328,7 @@ EOF;
         $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
         \file_put_contents($path, \base64_decode($data));
 
-        return new UploadedFile($path, $name, $mime, 1234);
+        return new UploadedFile($path, $name, $mime);
     }
 
     /**
