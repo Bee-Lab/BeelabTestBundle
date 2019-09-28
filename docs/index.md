@@ -116,6 +116,12 @@ final class MyTest extends WebTestCase
   retrieve the value of your second option in a `bar` field of a `foo` form (maybe beacuse the first one is empty),
   you can do `$this->getFormValue('foo_bar option', 1)`
 
+* Forms with collections
+  
+  Tipically, a form with a collection is a problem during tests, because the values of collections are not displayed
+  in the HTML (but, instead, added via JavaScript). You can solve such problema by visiting form URL and then using
+  `$this->postForm('your_form_name', $values)` (where`$values` can include collection values).
+
 * AbstractContainerAwareFixture
 
   When you need the service container in your fixtures, instead of implementing

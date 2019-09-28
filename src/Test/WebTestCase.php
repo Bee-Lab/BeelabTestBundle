@@ -332,6 +332,22 @@ EOF;
     }
 
     /**
+     * Submit a form that needs extra values (tipically, a form with collections).
+     *
+     * @param string $name    The name of form
+     * @param array  $values  The values to submit
+     * @param array  $values  The values to submit for $_FILES
+     * @param string $method  The method of form
+     */
+    protected function postForm(string $name, array $values, array $files = [], string $method = 'POST'): void
+    {
+        $formAction = self::$client->getRequest()->getUri();
+        $values['_token'] = $this->getFormValue($name.'__token');
+        $filesValues = \count($files) > 0 ? [$name => $files] : [];
+        self::$client->request($method, $formAction, [$name => $values], $filesValues);
+    }
+
+    /**
      * Load a single fixture class
      * (with possible other dependent fixture classes).
      *
