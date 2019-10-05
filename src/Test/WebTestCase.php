@@ -85,7 +85,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
             if (false !== $profile = self::$client->getProfile() && null !== $profile) {
                 $url .= '?'.$profile->getToken();
             }
-            $process = new Process($browser.' '.$url);
+            $process = new Process([$browser, $url]);
             $process->start();
         }
         if ($delete) {
