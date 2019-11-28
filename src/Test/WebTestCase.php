@@ -70,8 +70,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * Save request output and show it in the browser
      * See http://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
      * You can define a "domain" parameter with the current domain of your app.
-     *
-     * @param bool $delete
      */
     protected function saveOutput(bool $delete = true): void
     {
@@ -99,10 +97,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * See https://web.archive.org/web/20131002151908/http://blog.bee-lab.net/login-automatico-con-fosuserbundle/
      * Be sure that $firewall match the entry in your security.yaml configuration.
      *
-     * @param string $username
-     * @param string $firewall
-     * @param string $repository
-     *
      * @throws \InvalidArgumentException
      */
     protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager'): void
@@ -120,10 +114,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     /**
      * Get an image file to be used in a form.
-     *
-     * @param int $file
-     *
-     * @return UploadedFile
      */
     protected function getImageFile(int $file = 0): UploadedFile
     {
@@ -134,10 +124,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     /**
      * Get a pdf file to be used in a form.
-     *
-     * @param int $file
-     *
-     * @return UploadedFile
      */
     protected function getPdfFile(int $file = 0): UploadedFile
     {
@@ -158,10 +144,6 @@ EOF;
 
     /**
      * Get a pdf file to be used in a form.
-     *
-     * @param int $file
-     *
-     * @return UploadedFile
      */
     protected function getZipFile(int $file = 0): UploadedFile
     {
@@ -175,10 +157,6 @@ EOF;
 
     /**
      * Get a txt file to be used in a form.
-     *
-     * @param int $file
-     *
-     * @return UploadedFile
      */
     protected function getTxtFile(int $file = 0): UploadedFile
     {
@@ -192,9 +170,6 @@ EOF;
      * This is inspired by https://github.com/liip/LiipFunctionalTestBundle.
      *
      * @param array  $fixtures       e.g. ['UserData', 'OrderData']
-     * @param string $namespace
-     * @param string $managerService
-     * @param bool   $append
      *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \InvalidArgumentException
@@ -202,7 +177,7 @@ EOF;
     protected function loadFixtures(
         array $fixtures,
         string $namespace = 'App\\DataFixtures\\ORM\\',
-        string $managerService = null,
+        ?string $managerService = null,
         bool $append = false
     ): void {
         if (null === $managerService) {
@@ -226,9 +201,6 @@ EOF;
     /**
      * Assert that $num mail has been sent
      * Need self::$client->enableProfiler() before calling.
-     *
-     * @param int    $num
-     * @param string $message
      */
     protected function assertMailSent(int $num, string $message = ''): void
     {
@@ -243,11 +215,6 @@ EOF;
     /**
      * Get a form field value, from its id
      * Useful for POSTs.
-     *
-     * @param string $fieldId
-     * @param int    $position
-     *
-     * @return string
      */
     protected function getFormValue(string $fieldId, int $position = 0): string
     {
@@ -256,13 +223,6 @@ EOF;
 
     /**
      * Do an ajax request.
-     *
-     * @param string $method
-     * @param string $uri
-     * @param array  $params
-     * @param array  $files
-     *
-     * @return Crawler
      */
     protected static function ajax(string $method, string $uri, array $params = [], array $files = []): Crawler
     {
@@ -276,8 +236,6 @@ EOF;
      * @param Command $command       Command instance (e.g. new SendCommand())
      * @param array   $arguments     Possible command arguments and options
      * @param array   $otherCommands Possible other commands to define
-     *
-     * @return string
      */
     protected function commandTest(string $name, Command $command, array $arguments = [], array $otherCommands = []): string
     {
@@ -296,8 +254,6 @@ EOF;
     /**
      * Get an entity by its fixtures reference name.
      *
-     * @param string $name
-     *
      * @return mixed
      */
     protected function getReference(string $name)
@@ -314,13 +270,6 @@ EOF;
 
     /**
      * Get a file to be used in a form.
-     *
-     * @param string $file
-     * @param string $data
-     * @param string $ext
-     * @param string $mime
-     *
-     * @return UploadedFile
      */
     protected function getFile(string $file, string $data, string $ext, string $mime): UploadedFile
     {
@@ -334,10 +283,10 @@ EOF;
     /**
      * Submit a form that needs extra values (tipically, a form with collections).
      *
-     * @param string $name    The name of form
-     * @param array  $values  The values to submit
-     * @param array  $values  The values to submit for $_FILES
-     * @param string $method  The method of form
+     * @param string $name   The name of form
+     * @param array  $values The values to submit
+     * @param array  $values The values to submit for $_FILES
+     * @param string $method The method of form
      */
     protected function postForm(string $name, array $values, array $files = [], string $method = 'POST'): void
     {
@@ -350,9 +299,6 @@ EOF;
     /**
      * Load a single fixture class
      * (with possible other dependent fixture classes).
-     *
-     * @param Loader $loader
-     * @param string $className
      */
     private function loadFixtureClass(Loader $loader, string $className): void
     {
