@@ -237,9 +237,15 @@ EOF;
      * @param Command $command       Command instance (e.g. new SendCommand())
      * @param array   $arguments     Possible command arguments and options
      * @param array   $otherCommands Possible other commands to define
+     * @param array   $inputs        Possible inputs to set inside command
      */
-    protected function commandTest(string $name, Command $command, array $arguments = [], array $otherCommands = []): string
-    {
+    protected function commandTest(
+        string $name,
+        Command $command,
+        array $arguments = [],
+        array $otherCommands = [],
+        array $inputs = null
+    ): string {
         $application = new Application(self::$client->getKernel());
         $application->add($command);
         foreach ($otherCommands as $otherCommand) {
@@ -247,6 +253,9 @@ EOF;
         }
         $cmd = $application->find($name);
         $commandTester = new CommandTester($cmd);
+        if (null !== $inputs) {
+            $commandTester->setInputs($inputs);
+        }
         $commandTester->execute(\array_merge(['command' => $cmd->getName()], $arguments));
 
         return $commandTester->getDisplay();
