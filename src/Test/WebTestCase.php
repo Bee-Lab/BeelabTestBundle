@@ -170,7 +170,7 @@ EOF;
      * Load fixtures as an array of "names"
      * This is inspired by https://github.com/liip/LiipFunctionalTestBundle.
      *
-     * @param array  $fixtures       e.g. ['UserData', 'OrderData']
+     * @param array $fixtures e.g. ['UserData', 'OrderData']
      *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \InvalidArgumentException
@@ -285,7 +285,7 @@ EOF;
     {
         $name = 'file_'.$file.'.'.$ext;
         $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
-        \file_put_contents($path, \base64_decode($data));
+        \file_put_contents($path, 'text' === \substr($mime, 0, 4) ? $data : \base64_decode($data));
 
         return new UploadedFile($path, $name, $mime);
     }
