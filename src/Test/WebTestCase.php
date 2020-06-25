@@ -16,6 +16,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 
 abstract class WebTestCase extends SymfonyWebTestCase
 {
@@ -285,7 +286,7 @@ EOF;
     {
         $name = 'file_'.$file.'.'.$ext;
         $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
-        \file_put_contents($path, 'text' === \substr($mime, 0, 4) ? $data : \base64_decode($data));
+        \file_put_contents($path, 0 === \strpos($mime, 'text') ? $data : \base64_decode($data));
 
         return new UploadedFile($path, $name, $mime);
     }
@@ -304,6 +305,16 @@ EOF;
         $values['_token'] = $this->getFormValue($name.'__token');
         $filesValues = \count($files) > 0 ? [$name => $files] : [];
         self::$client->request($method, $formAction, [$name => $values], $filesValues);
+    }
+
+    protected static function setSessionException(): void
+    {
+        /** @var \Symfony\Component\HttpFoundation\Session\SessionInterface $session */
+        $session = self::$container->get('session');
+        $session->set('_security.last_error', new AuthenticationServiceException('error...'));
+        $session->save();
+        $cookie = new Cookie($session->getName(), $session->getId());
+        self::$client->getCookieJar()->set($cookie);
     }
 
     /**

@@ -134,3 +134,9 @@ final class MyTest extends WebTestCase
   `refname` is a name of a reference you used inside a fixture. E.g., if you used `$this->addReference('foo')` or
   `$this->setReference('foo')` inside one of your fixtures, you can call `$this->getReference('foo')` to retrieve
   the entity you created in that fixture. ⚠️️ **Warning**: this method is working only if you are loading fixtures during test execution.
+
+* Test login exception
+
+  You can use `setSessionException` static method to test a generic exception in authentication.
+  Just call such method and then visit your login page, e.g. `self::$client->request('GET', '/login')`.
+ 
