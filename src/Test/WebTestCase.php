@@ -317,6 +317,38 @@ EOF;
         self::$client->getCookieJar()->set($cookie);
     }
 
+    protected static function clickLinkByData(string $dataName, ?string $parent = null): Crawler
+    {
+        $selector = (null === $parent ? '' : $parent.' ').'a[data-'.$dataName.']';
+        $linkNode = self::$client->getCrawler()->filter($selector);
+
+        return self::$client->click($linkNode->link());
+    }
+
+    protected static function clickLinkBySelectorText(string $linkText, ?string $parent = null): Crawler
+    {
+        $selector = (null === $parent ? '' : $parent.' ').'a:contains("'.$linkText.'")';
+        $linkNode = self::$client->getCrawler()->filter($selector);
+
+        return self::$client->click($linkNode->link());
+    }
+
+    /**
+     * @param array<string, mixed> $values
+     * @param array<string, mixed> $serverParams
+     */
+    protected static function submitFormByData(
+        string $dataName,
+        array $values = [],
+        string $method = 'POST',
+        array $serverParams = []
+    ): Crawler {
+        $buttonNode = self::$client->getCrawler()->filter('button[data-'.$dataName.']');
+        $form = $buttonNode->form($values, $method);
+
+        return self::$client->submit($form, [], $serverParams);
+    }
+
     /**
      * Load a single fixture class
      * (with possible other dependent fixture classes).
