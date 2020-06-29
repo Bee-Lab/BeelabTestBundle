@@ -12,5 +12,7 @@ final class BeelabTestExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter('beelab_test.browser', $config['browser']);
+        $container->setParameter('beelab_test.firewall', $config['firewall']);
+        $container->setParameter('beelab_test.user_service', $config['user_service']);
     }
 }

@@ -92,7 +92,6 @@ final class WebTestCaseTest extends TestCase
             ->method('getRoles')
             ->willReturn([]);
         $user
-            ->expects($this->any())
             ->method('__toString')
             ->willReturn('user');
 
@@ -119,9 +118,9 @@ final class WebTestCaseTest extends TestCase
             ->method('getCookieJar')
             ->willReturn($cookieJar);
 
-        $cookieJar->expects($this->any())->method('get');
+        $cookieJar->method('get');
 
-        $session->expects($this->any())->method('getName')->willReturn('foo');
+        $session->method('getName')->willReturn('foo');
 
         // Call `login` method
         $method = new \ReflectionMethod($this->mock, 'login');

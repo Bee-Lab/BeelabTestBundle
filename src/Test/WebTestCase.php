@@ -97,15 +97,17 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Login
      * See https://web.archive.org/web/20131002151908/http://blog.bee-lab.net/login-automatico-con-fosuserbundle/
-     * Be sure that $firewall match the entry in your security.yaml configuration.
+     * Be sure that $firewall matches the entry in your security.yaml configuration.
      *
      * @throws \InvalidArgumentException
      */
-    protected function login(string $username = 'admin1@example.org', string $firewall = 'main', string $repository = 'beelab_user.manager'): void
+    protected function login(string $username = 'admin1@example.org', ?string $firewall = null, ?string $service = null): void
     {
-        if (null === $user = static::$container->get($repository)->loadUserByUsername($username)) {
+        $service = $service ?? static::$container->getParameter('beelab_test.user_service');
+        if (null === $user = static::$container->get($service)->loadUserByUsername($username)) {
             throw new \InvalidArgumentException(\sprintf('Username %s not found.', $username));
         }
+        $firewall = $firewall ?? static::$container->getParameter('beelab_test.firewall');
         $token = new UsernamePasswordToken($user, null, $firewall, $user->getRoles());
         $session = static::$container->get('session');
         $session->set('_security_'.$firewall, \serialize($token));

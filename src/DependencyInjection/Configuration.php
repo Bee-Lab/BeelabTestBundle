@@ -17,6 +17,12 @@ final class Configuration implements ConfigurationInterface
                 ->scalarNode('browser')
                     ->defaultValue('/usr/bin/firefox')
                 ->end()
+                ->scalarNode('firewall')
+                    ->defaultValue('main')
+                ->end()
+                ->scalarNode('user_service')
+                    ->defaultValue('beelab_user.manager')
+                ->end()
             ->end()
         ;
 
