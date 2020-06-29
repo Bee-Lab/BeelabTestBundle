@@ -349,6 +349,11 @@ EOF;
         return self::$client->submit($form, [], $serverParams);
     }
 
+    protected static function assertSelectorCounts(int $number, string $selector, string $message = ''): void
+    {
+        self::assertCount($number, self::$client->getCrawler()->filter($selector), $message);
+    }
+
     /**
      * Load a single fixture class
      * (with possible other dependent fixture classes).
