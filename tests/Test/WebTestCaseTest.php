@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
-use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -36,7 +36,7 @@ final class WebTestCaseTest extends TestCase
     protected function setUp(): void
     {
         $this->container = $this->createMock(ContainerInterface::class);
-        $this->client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
+        $this->client = $this->getMockBuilder(KernelBrowser::class)->disableOriginalConstructor()->getMock();
         $this->mock = $this->createMock(WebTestCase::class);
 
         $class = new \ReflectionClass($this->mock);
@@ -125,7 +125,7 @@ final class WebTestCaseTest extends TestCase
         // Call `login` method
         $method = new \ReflectionMethod($this->mock, 'login');
         $method->setAccessible(true);
-        $method->invoke($this->mock);
+        $method->invoke($this->mock, 'admin1@example.org', 'main', 'beelab_user.manager');
     }
 
     public function testGetFile(): void

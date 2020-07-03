@@ -6,7 +6,6 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as Loader;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -26,7 +25,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected $em;
 
     /**
-     * @var Client
+     * @var \Symfony\Component\BrowserKit\AbstractBrowser
      */
     protected static $client;
 
