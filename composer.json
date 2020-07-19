@@ -24,11 +24,11 @@
         "symfony/dom-crawler": "^4.4 || ^5.0"
     },
     "require-dev": {
-        "doctrine/lexer": "^1.0.1",
+        "doctrine/lexer": "^1.2",
         "doctrine/orm": "^2.7",
         "friendsofphp/php-cs-fixer": "^2.16",
         "mikey179/vfsstream": "^1.6",
-        "phpunit/phpunit": "^8.5 || ^9.1",
+        "phpunit/phpunit": "^8.5 || ^9.2",
         "symfony/doctrine-bridge": "^4.4 || ^5.0",
         "symfony/framework-bundle": "^4.4 || ^5.0",
         "symfony/mime": "^4.4 || ^5.0",
@@ -41,7 +41,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.5.x-dev"
+            "dev-master": "5.1.x-dev"
         }
     },
     "autoload": {

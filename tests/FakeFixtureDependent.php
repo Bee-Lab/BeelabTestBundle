@@ -6,9 +6,9 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class FakeFixtureDependent implements DependentFixtureInterface, FixtureInterface
+final class FakeFixtureDependent implements DependentFixtureInterface, FixtureInterface
 {
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [
             'Beelab\TestBundle\FakeFixture',

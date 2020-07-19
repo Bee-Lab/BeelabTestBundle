@@ -9,6 +9,6 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
     public function testGetConfigTreeBuilder(): void
     {
         $configuration = new Configuration();
-        $this->assertInstanceOf(TreeBuilder::class, $configuration->getConfigTreeBuilder());
+        self::assertInstanceOf(TreeBuilder::class, $configuration->getConfigTreeBuilder());
     }
 }

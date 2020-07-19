@@ -22,7 +22,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * @var EntityManagerInterface|null
      */
-    protected $em;
+    protected static $em;
 
     /**
      * @var \Symfony\Component\BrowserKit\AbstractBrowser
@@ -33,6 +33,10 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * @var \Doctrine\Common\DataFixtures\AbstractFixture|null
      */
     private $fixture;
+
+    protected static $authUser;
+
+    protected static $authPw;
 
     protected function setUp(): void
     {
@@ -45,7 +49,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
             $kernel->boot();
             static::$container = $kernel->getContainer();
             if (static::$container->has('doctrine.orm.entity_manager')) {
-                $this->em = static::$container->get('doctrine.orm.entity_manager');
+                self::$em = static::$container->get('doctrine.orm.entity_manager');
             }
         }
         if (!empty(static::$authUser) && !empty(static::$authPw)) {
@@ -60,8 +64,8 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     protected function tearDown(): void
     {
-        if (null !== $this->em) {
-            $this->em->getConnection()->close();
+        if (null !== self::$em) {
+            self::$em->getConnection()->close();
         }
         parent::tearDown();
     }
@@ -71,7 +75,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * See http://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
      * You can define a "domain" parameter with the current domain of your app.
      */
-    protected function saveOutput(bool $delete = true): void
+    protected static function saveOutput(bool $delete = true): void
     {
         $browser = static::$container->getParameter('beelab_test.browser');
         $rootDir = static::$container->getParameter('kernel.project_dir').'/';
@@ -100,7 +104,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @throws \InvalidArgumentException
      */
-    protected function login(string $username = 'admin1@example.org', ?string $firewall = null, ?string $service = null): void
+    protected static function login(string $username = 'admin1@example.org', ?string $firewall = null, ?string $service = null): void
     {
         $service = $service ?? static::$container->getParameter('beelab_test.user_service');
         if (null === $user = static::$container->get($service)->loadUserByUsername($username)) {
@@ -118,17 +122,17 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Get an image file to be used in a form.
      */
-    protected function getImageFile(int $file = 0): UploadedFile
+    protected static function getImageFile(int $file = 0): UploadedFile
     {
         $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
 
-        return $this->getFile($file, $data, 'png', 'image/png');
+        return self::getFile($file, $data, 'png', 'image/png');
     }
 
     /**
      * Get a pdf file to be used in a form.
      */
-    protected function getPdfFile(int $file = 0): UploadedFile
+    protected static function getPdfFile(int $file = 0): UploadedFile
     {
         $data = <<<'EOF'
 JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgP
@@ -142,30 +146,30 @@ wMDAwMDAwMDc3IDAwMDAwIG4gCjAwMDAwMDAxNzggMDAwMDAgbiAKMDAwMDAwMDQ1NyAwMDAwMCBuIAp
 ICAgIC9TaXplIDUKICA+PgpzdGFydHhyZWYKNTY1CiUlRU9GCg==
 EOF;
 
-        return $this->getFile($file, $data, 'pdf', 'application/pdf');
+        return self::getFile($file, $data, 'pdf', 'application/pdf');
     }
 
     /**
      * Get a pdf file to be used in a form.
      */
-    protected function getZipFile(int $file = 0): UploadedFile
+    protected static function getZipFile(int $file = 0): UploadedFile
     {
         $data = <<<'EOF'
 UEsDBAoAAgAAAM5RjEVOGigMAgAAAAIAAAAFABwAaC50eHRVVAkAA/OxilTzsYpUdXgLAAEE6AMAAARkAAAAaApQSwECHgMKAAIAAADOUYxF
 ThooDAIAAAACAAAABQAYAAAAAAABAAAApIEAAAAAaC50eHRVVAUAA/OxilR1eAsAAQToAwAABGQAAABQSwUGAAAAAAEAAQBLAAAAQQAAAAAA
 EOF;
 
-        return $this->getFile($file, $data, 'zip', 'application/zip');
+        return self::getFile($file, $data, 'zip', 'application/zip');
     }
 
     /**
      * Get a txt file to be used in a form.
      */
-    protected function getTxtFile(int $file = 0): UploadedFile
+    protected static function getTxtFile(int $file = 0): UploadedFile
     {
         $data = 'Lorem ipsum dolor sit amet';
 
-        return $this->getFile($file, $data, 'txt', 'text/plain');
+        return self::getFile($file, $data, 'txt', 'text/plain');
     }
 
     /**
@@ -189,7 +193,7 @@ EOF;
                 throw new \InvalidArgumentException(\sprintf('The service "%s" is not an EntityManager', $manager));
             }
         } else {
-            $manager = $this->em;
+            $manager = self::$em;
         }
         $manager->getConnection()->exec('SET foreign_key_checks = 0');
         $loader = new Loader(static::$container);
@@ -205,13 +209,13 @@ EOF;
      * Assert that $num mail has been sent
      * Need self::$client->enableProfiler() before calling.
      */
-    protected function assertMailSent(int $num, string $message = ''): void
+    protected static function assertMailSent(int $num, string $message = ''): void
     {
         if (false !== $profile = self::$client->getProfile()) {
             $collector = $profile->getCollector('swiftmailer');
-            $this->assertEquals($num, $collector->getMessageCount(), $message);
+            self::assertEquals($num, $collector->getMessageCount(), $message);
         } else {
-            $this->markTestSkipped('Profiler not enabled.');
+            self::markTestSkipped('Profiler not enabled.');
         }
     }
 
@@ -219,7 +223,7 @@ EOF;
      * Get a form field value, from its id
      * Useful for POSTs.
      */
-    protected function getFormValue(string $fieldId, int $position = 0): string
+    protected static function getFormValue(string $fieldId, int $position = 0): string
     {
         return self::$client->getCrawler()->filter('#'.$fieldId)->eq($position)->attr('value');
     }
@@ -241,7 +245,7 @@ EOF;
      * @param array   $otherCommands Possible other commands to define
      * @param array   $inputs        Possible inputs to set inside command
      */
-    protected function commandTest(
+    protected static function commandTest(
         string $name,
         Command $command,
         array $arguments = [],
@@ -283,7 +287,7 @@ EOF;
     /**
      * Get a file to be used in a form.
      */
-    protected function getFile(string $file, string $data, string $ext, string $mime): UploadedFile
+    protected static function getFile(string $file, string $data, string $ext, string $mime): UploadedFile
     {
         $name = 'file_'.$file.'.'.$ext;
         $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
@@ -297,13 +301,13 @@ EOF;
      *
      * @param string $name   The name of form
      * @param array  $values The values to submit
-     * @param array  $values The values to submit for $_FILES
+     * @param array  $files  The values to submit for $_FILES
      * @param string $method The method of form
      */
-    protected function postForm(string $name, array $values, array $files = [], string $method = 'POST'): void
+    protected static function postForm(string $name, array $values, array $files = [], string $method = 'POST'): void
     {
         $formAction = self::$client->getRequest()->getUri();
-        $values['_token'] = $this->getFormValue($name.'__token');
+        $values['_token'] = self::getFormValue($name.'__token');
         $filesValues = \count($files) > 0 ? [$name => $files] : [];
         self::$client->request($method, $formAction, [$name => $values], $filesValues);
     }

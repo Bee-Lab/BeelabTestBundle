@@ -1,6 +1,14 @@
 UPGRADE
 =======
 
+From 4.0 to 5.0
+---------------
+
+A bunch of methods are now static. This is affecting you only if you're overriding such methods, since you
+need to declare as static your methods too. Calling such method can be left untouched (e.g. you can still call
+methods using `$this->` instead of `self::`).
+Also, `$em` proteced property is now static. If you were using `$this->em`, you need to use `self::$em` instead.
+
 From 3.0 to 4.0
 ---------------
 

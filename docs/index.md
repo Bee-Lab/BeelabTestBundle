@@ -58,7 +58,7 @@ final class MyTest extends WebTestCase
 
 * Browser output debug
 
-  You can output the content of response in your browser, just calling `$this->saveOutput()`.
+  You can output the content of response in your browser, just calling `self::saveOutput()`.
   You can define a parameter named `domain`, otherwise standard localhost will be used. 
   The output will be save under document root and displayed with browser (by default, `/usr/bin/firefox`),
   then the page will be deleted.
@@ -92,7 +92,7 @@ final class MyTest extends WebTestCase
   This is integrated by default with [BeelabUserBundle](https://github.com/Bee-Lab/BeelabUserBundle).
   Anyway, you can use any user provider, passing the name of service as third argument or configuring.
   For example, if you want to login users provided by FOSUserBundle in your tests, you can do something like
-  `$this->login('myuser', 'main', 'fos_user.user_provider.username');`.
+  `self::login('myuser', 'main', 'fos_user.user_provider.username');`.
   Another notable service you can use is Symfony's built-in `security.user.provider.concrete.in_memory`.
   For basic usage, just pass the username as first argument.
 
@@ -118,25 +118,25 @@ final class MyTest extends WebTestCase
 
 * Files for forms
 
-  Use `$this->getImageFile()`, `$this->getPdfFile()`, `$this->getZipFile()`, and `$this->getTxtFile()` to get
+  Use `self::getImageFile()`, `self::getPdfFile()`, `self::getZipFile()`, and `self::getTxtFile()` to get
   files of various types for your uploadable fields.
-  In forms with more than a field of the same type, use `$this->getImageFile(1)`, `$this->getImageFile(2)`, etc.
-  You can also use `$this->getFile(0, $data, 'png', 'image/png')` and pass directly your file data.
+  In forms with more than a field of the same type, use `self::getImageFile(1)`, `self::getImageFile(2)`, etc.
+  You can also use `self::getFile(0, $data, 'png', 'image/png')` and pass directly your file data.
 
 * Form values shortcut
 
-  If you need to retrieve the value of a form field, you can use `$this->getFormValue('form_field')`.
+  If you need to retrieve the value of a form field, you can use `self::getFormValue('form_field')`.
   This is useful for retrieving CSRF token values or select values.
   In case of a select, note that you need to add `option` after your field's id, and you can pass a third 
   optional parameter with the position.
   If, for example, you want to retrieve the value of your second option in a `bar` field of a `foo` form
-  (maybe beacuse the first one is empty), you can do `$this->getFormValue('foo_bar option', 1)`
+  (maybe beacuse the first one is empty), you can do `self::getFormValue('foo_bar option', 1)`
 
 * Forms with collections
   
   Tipically, a form with a collection is a problem during tests, because the values of collections are not displayed
   in the HTML (but, instead, added via JavaScript).
-  You can solve such problema by visiting form URL and then using `$this->postForm('your_form_name', $values)`
+  You can solve such problema by visiting form URL and then using `self::postForm('your_form_name', $values)`
   (where`$values` can include collection values).
 
 ### Fixtures-related
@@ -150,7 +150,7 @@ final class MyTest extends WebTestCase
 * AbstractContainerAwareFixture
 
   When you need the service container in your fixtures, instead of implementing
-  `Symfony\Component\DependencyInjection\ContainerAwareInterface`, you can extends
+  `Symfony\Component\DependencyInjection\ContainerAwareInterface`, you can extend
   `Beelab\TestBundle\DataFixtures\AbstractContainerAwareFixture`.
 
 * Get entity by reference
@@ -178,7 +178,7 @@ final class MyTest extends WebTestCase
 
 * Mail sent assertion
 
-  Check how many mails has been sent with `$this->assertMailSent(1)` (or 2, 3, etc.).
+  Check how many mails has been sent with `self::assertMailSent(1)` (or 2, 3, etc.).
   You need to call `$self::client->enableProfiler()` before.
   Currently, this is working only with SwiftMailer.
 
@@ -186,5 +186,5 @@ final class MyTest extends WebTestCase
 
 * Test commands
 
-  You can test a command by executing something like `$output = $this->commandTest('app:alert', new AlertCommand());`
+  You can test a command by executing something like `$output = self::commandTest('app:alert', new AlertCommand());`
   and then doing assertions on `$output`.
