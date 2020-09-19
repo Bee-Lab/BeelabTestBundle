@@ -25,7 +25,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected static $em;
 
     /**
-     * @var \Symfony\Component\BrowserKit\AbstractBrowser
+     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
      */
     protected static $client;
 
@@ -122,7 +122,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Get an image file to be used in a form.
      */
-    protected static function getImageFile(int $file = 0): UploadedFile
+    protected static function getImageFile(string $file = '0'): UploadedFile
     {
         $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
 
@@ -132,7 +132,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Get a pdf file to be used in a form.
      */
-    protected static function getPdfFile(int $file = 0): UploadedFile
+    protected static function getPdfFile(string $file = '0'): UploadedFile
     {
         $data = <<<'EOF'
 JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgP
@@ -152,7 +152,7 @@ EOF;
     /**
      * Get a pdf file to be used in a form.
      */
-    protected static function getZipFile(int $file = 0): UploadedFile
+    protected static function getZipFile(string $file = '0'): UploadedFile
     {
         $data = <<<'EOF'
 UEsDBAoAAgAAAM5RjEVOGigMAgAAAAIAAAAFABwAaC50eHRVVAkAA/OxilTzsYpUdXgLAAEE6AMAAARkAAAAaApQSwECHgMKAAIAAADOUYxF
@@ -165,7 +165,7 @@ EOF;
     /**
      * Get a txt file to be used in a form.
      */
-    protected static function getTxtFile(int $file = 0): UploadedFile
+    protected static function getTxtFile(string $file = '0'): UploadedFile
     {
         $data = 'Lorem ipsum dolor sit amet';
 
@@ -187,10 +187,10 @@ EOF;
         ?string $managerService = null,
         bool $append = false
     ): void {
-        if (null === $managerService) {
+        if (null !== $managerService) {
             $manager = static::$container->get($managerService);
             if (!$manager instanceof EntityManagerInterface) {
-                throw new \InvalidArgumentException(\sprintf('The service "%s" is not an EntityManager', $manager));
+                throw new \InvalidArgumentException(\sprintf('The service "%s" is not an EntityManager', \get_class($manager)));
             }
         } else {
             $manager = self::$em;
@@ -243,7 +243,7 @@ EOF;
      * @param Command $command       Command instance (e.g. new SendCommand())
      * @param array   $arguments     Possible command arguments and options
      * @param array   $otherCommands Possible other commands to define
-     * @param array   $inputs        Possible inputs to set inside command
+     * @param ?array  $inputs        Possible inputs to set inside command
      */
     protected static function commandTest(
         string $name,

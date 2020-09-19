@@ -12,6 +12,7 @@ use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\DomCrawler\Link;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Profiler\Profile;
@@ -20,17 +21,17 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 final class WebTestCaseTest extends TestCase
 {
     /**
-     * @var \Beelab\TestBundle\Test\WebTestCase
+     * @var \Beelab\TestBundle\Test\WebTestCase&\PHPUnit\Framework\MockObject\MockObject
      */
     protected static $mock;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface&\PHPUnit\Framework\MockObject\MockObject
      */
     protected static $container;
 
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\Client
+     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser&\PHPUnit\Framework\MockObject\MockObject
      */
     protected static $client;
 
@@ -205,11 +206,11 @@ final class WebTestCaseTest extends TestCase
         self::markTestIncomplete('Need to mock `loadFixtureClass` method correctly');
 
         self::$mock
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('loadFixtureClass');
 
-        $connection = $this->createMock('stdClass', ['exec']);
-        $eventManager = $this->createMock('stdClass', ['addEventSubscriber']);
+        $connection = $this->createMock('stdClass');
+        $eventManager = $this->createMock('stdClass');
         $manager = $this->createMock(EntityManagerInterface::class);
         $manager
             ->method('getConnection')
@@ -277,5 +278,21 @@ final class WebTestCaseTest extends TestCase
         $method = new \ReflectionMethod(self::$mock, 'assertMailSent');
         $method->setAccessible(true);
         $method->invoke(self::$mock, 1);
+    }
+
+    public function testClickLinkByData(): void
+    {
+        $link = $this->createMock(Link::class);
+        $crawler = $this->createMock(Crawler::class);
+        $crawler->expects(self::once())->method('filter')->willReturnSelf();
+        $crawler->expects(self::once())->method('link')->willReturn($link);
+        self::$client->expects(self::once())->method('getCrawler')->willReturn($crawler);
+        self::$client->expects(self::once())->method('click')->willReturn($crawler);
+
+        $method = new \ReflectionMethod(self::$mock, 'clickLinkByData');
+        $method->setAccessible(true);
+        $result = $method->invoke(self::$mock, 'foo');
+
+        self::assertInstanceOf(Crawler::class, $result);
     }
 }

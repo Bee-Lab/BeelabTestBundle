@@ -120,8 +120,8 @@ final class MyTest extends WebTestCase
 
   Use `self::getImageFile()`, `self::getPdfFile()`, `self::getZipFile()`, and `self::getTxtFile()` to get
   files of various types for your uploadable fields.
-  In forms with more than a field of the same type, use `self::getImageFile(1)`, `self::getImageFile(2)`, etc.
-  You can also use `self::getFile(0, $data, 'png', 'image/png')` and pass directly your file data.
+  In forms with more than a field of the same type, use `self::getImageFile('1')`, `self::getImageFile('2')`, etc.
+  You can also use `self::getFile('0', $data, 'png', 'image/png')` and pass directly your file data.
 
 * Form values shortcut
 
@@ -166,7 +166,7 @@ final class MyTest extends WebTestCase
 * Click link by data
 
   You add a `data` attribute to your link (e.g. `<a href="#" data-edit>edit entity</a>`), you can call link
-  using such attribute instead of link text (in the same example, use `self::clickLinkByData('edit'))`).
+  using that attribute instead of link text (in the same example, use `self::clickLinkByData('edit'))`).
   This is mostly useful in multi-language applications or when your labels change frequently.
 
 * Submit form by data
