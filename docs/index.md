@@ -139,6 +139,12 @@ final class MyTest extends WebTestCase
   You can solve such problema by visiting form URL and then using `self::postForm('your_form_name', $values)`
   (where`$values` can include collection values).
 
+* Selecting checkboxes
+
+  You can check many checkboxes using `self::tickCheckboxes($form, $values)`, using for values the same
+  array you would use for a select multiple. This allows you to easily switch bewteen `true` and `false`
+  in `multiple` option of `ChoiceType`.
+
 ### Fixtures-related
 
 * Fast fixtures load
@@ -173,6 +179,9 @@ final class MyTest extends WebTestCase
 
   Similar to previous, but for buttons (e.g. `<button type="submit" data-submit>submit this form</button>`).
   Use `self::submitFormByData('submit', $values)`.
+  You can also pass an array of checkboxes (`tickCheckboxes` method is used internally) as additional argument,
+  for example:
+  `self::submitFormByData('submit', $values, [], 'POST', [], ['foo[bar]' => ['value1', 'value2', 'value3']])`
 
 ### E-mail related
 
@@ -187,4 +196,5 @@ final class MyTest extends WebTestCase
 * Test commands
 
   You can test a command by executing something like `$output = self::commandTest('app:alert', new AlertCommand());`
-  and then doing assertions on `$output`.
+  and then doing assertions on `$output`. You can pass an array of arguments and options as third argument
+  (remember that options need to be prefixed with a double dash).

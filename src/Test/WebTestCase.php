@@ -12,6 +12,8 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
+use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -346,10 +348,14 @@ EOF;
         string $dataName,
         array $values = [],
         string $method = 'POST',
-        array $serverParams = []
+        array $serverParams = [],
+        array $checkboxValues = []
     ): Crawler {
         $buttonNode = self::$client->getCrawler()->filter('button[data-'.$dataName.']');
         $form = $buttonNode->form($values, $method);
+        if (\count($checkboxValues) > 0) {
+            self::tickCheckboxes($form, $checkboxValues);
+        }
 
         return self::$client->submit($form, [], $serverParams);
     }
@@ -357,6 +363,26 @@ EOF;
     protected static function assertSelectorCounts(int $number, string $selector, string $message = ''): void
     {
         self::assertCount($number, self::$client->getCrawler()->filter($selector), $message);
+    }
+
+    protected static function tickCheckboxes(Form $form, array $checkboxValues = []): void
+    {
+        foreach ($checkboxValues as $name => $cbValues) {
+            foreach ($cbValues as $value) {
+                self::findCheckbox($form, $name, $value)->tick();
+            }
+        }
+    }
+
+    private static function findCheckbox(Form $form, string $name, string $value): ?ChoiceFormField
+    {
+        foreach ($form->offsetGet($name) as $field) {
+            $available = $field->availableOptionValues();
+            if ($value === \reset($available)) {
+                return $field;
+            }
+        }
+        throw new \InvalidArgumentException('Field not found.');
     }
 
     /**
