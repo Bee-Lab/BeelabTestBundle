@@ -7,14 +7,12 @@ cache:
 jobs:
     fast_finish: true
     include:
-        - php: 7.2
-          env: COMPOSER_FLAGS="--prefer-lowest"
         - php: 7.3
-          env: SYMFONY_VERSION=4.4.* SYMFONY_DEPRECATIONS_HELPER=strict
+          env: COMPOSER_FLAGS="--prefer-lowest"
         - php: 7.4
-          env: SYMFONY_VERSION=5.1.*
-        - php: nightly
-          env: COMPOSER_FLAGS="--ignore-platform-reqs"
+          env: SYMFONY_VERSION=4.4.* SYMFONY_DEPRECATIONS_HELPER=strict
+        - php: 8.0
+          env: SYMFONY_VERSION=5.2.*
 
 env:
     global:
