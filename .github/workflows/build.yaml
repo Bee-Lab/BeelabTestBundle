@@ -42,5 +42,5 @@ jobs:
             - run: composer require --dev doctrine/lexer:v1.0.1 --no-update
               if: matrix.composer_option == '--prefer-lowest'
             - run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}
-            - run: vendor/bin/phpunit
+            - run: bin/phpunit
 
