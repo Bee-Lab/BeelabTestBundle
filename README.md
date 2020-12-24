@@ -1,7 +1,7 @@
 BeelabTestBundle
 ================
 
-[![Build Status](https://travis-ci.org/Bee-Lab/BeelabTestBundle.png?branch=master)](https://travis-ci.org/Bee-Lab/BeelabTestBundle)
+[![Build Status](https://github.com/Bee-Lab/BeelabTestBundle/workflows/build/badge.svg)](https://github.com/Bee-Lab/BeelabTestBundle/actions)
 
 This bundle contains just an opinionated extension of Symfony `WebTestCase`.
 
