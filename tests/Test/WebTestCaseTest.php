@@ -21,17 +21,17 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 final class WebTestCaseTest extends TestCase
 {
     /**
-     * @var \Beelab\TestBundle\Test\WebTestCase&\PHPUnit\Framework\MockObject\MockObject
+     * @var WebTestCase&\PHPUnit\Framework\MockObject\MockObject
      */
     protected static $mock;
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface&\PHPUnit\Framework\MockObject\MockObject
+     * @var ContainerInterface&\PHPUnit\Framework\MockObject\MockObject
      */
     protected static $container;
 
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser&\PHPUnit\Framework\MockObject\MockObject
+     * @var KernelBrowser&\PHPUnit\Framework\MockObject\MockObject
      */
     protected static $client;
 
@@ -112,7 +112,7 @@ final class WebTestCaseTest extends TestCase
         self::$container
             ->method('get')
             ->withConsecutive(['beelab_user.manager'], ['session'])
-            ->will($this->onConsecutiveCalls($repository, $session));
+            ->will(self::onConsecutiveCalls($repository, $session));
 
         $cookieJar = $this->createMock(CookieJar::class);
 

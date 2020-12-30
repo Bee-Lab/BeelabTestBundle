@@ -36,8 +36,14 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     private $fixture;
 
+    /**
+     * @var string|null
+     */
     protected static $authUser;
 
+    /**
+     * @var string|null
+     */
     protected static $authPw;
 
     protected function setUp(): void

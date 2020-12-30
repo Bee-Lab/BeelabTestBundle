@@ -26,14 +26,14 @@
     "require-dev": {
         "doctrine/lexer": "^1.2",
         "doctrine/orm": "^2.7",
-        "friendsofphp/php-cs-fixer": "^2.16",
+        "friendsofphp/php-cs-fixer": "^2.17",
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^9.5",
         "symfony/doctrine-bridge": "^4.4 || ^5.0",
         "symfony/framework-bundle": "^4.4 || ^5.0",
         "symfony/mime": "^4.4 || ^5.0",
         "symfony/security-core": "^4.4 || ^5.0",
-        "symfony/swiftmailer-bundle": "^3.4"
+        "symfony/swiftmailer-bundle": "^3.5"
     },
     "config": {
         "bin-dir": "bin",
