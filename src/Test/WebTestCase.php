@@ -203,14 +203,14 @@ abstract class WebTestCase extends SymfonyWebTestCase
         } else {
             $manager = self::$em;
         }
-        $manager->getConnection()->exec('SET foreign_key_checks = 0');
+        $manager->getConnection()->executeStatement('SET foreign_key_checks = 0');
         $loader = new Loader(static::$container);
         foreach ($fixtures as $fixture) {
             $this->loadFixtureClass($loader, $namespace.$fixture);
         }
         $executor = new ORMExecutor($manager, new ORMPurger());
         $executor->execute($loader->getFixtures(), $append);
-        $manager->getConnection()->exec('SET foreign_key_checks = 1');
+        $manager->getConnection()->executeStatement('SET foreign_key_checks = 1');
     }
 
     /**
@@ -220,6 +220,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected static function assertMailSent(int $num, string $message = ''): void
     {
         if (false !== $profile = self::$client->getProfile()) {
+            /** @var \Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector $collector */
             $collector = $profile->getCollector('swiftmailer');
             self::assertEquals($num, $collector->getMessageCount(), $message);
         } else {

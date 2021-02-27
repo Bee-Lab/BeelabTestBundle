@@ -1,0 +1,17 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
+			count: 1
+			path: src/DependencyInjection/Configuration.php
+
+		-
+			message: "#^Parameter \\$manager of method Beelab\\\\TestBundle\\\\Tests\\\\FakeFixture\\:\\:load\\(\\) has invalid typehint type Doctrine\\\\Common\\\\Persistence\\\\ObjectManager\\.$#"
+			count: 1
+			path: tests/FakeFixture.php
+
+		-
+			message: "#^Parameter \\$manager of method Beelab\\\\TestBundle\\\\Tests\\\\FakeFixtureDependent\\:\\:load\\(\\) has invalid typehint type Doctrine\\\\Common\\\\Persistence\\\\ObjectManager\\.$#"
+			count: 1
+			path: tests/FakeFixtureDependent.php
+

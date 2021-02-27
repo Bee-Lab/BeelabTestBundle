@@ -1,9 +1,8 @@
-.gitattributes   export-ignore
-.github          export-ignore
-.gitignore       export-ignore
-.php_cs          export-ignore
-phpunit.xml.dist export-ignore
-README.md        export-ignore
-UPGRADE.md       export-ignore
-docs/            export-ignore
-tests/           export-ignore
+/.git*            export-ignore
+/.php_cs          export-ignore
+/phpstan*         export-ignore
+/phpunit.xml.dist export-ignore
+/README.md        export-ignore
+/UPGRADE.md       export-ignore
+/docs/            export-ignore
+/tests/           export-ignore

@@ -1,0 +1,11 @@
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    excludePaths:
+        analyse:
+            - tests/FakeFixture.php
+            - tests/FakeFixtureDependent.php
+includes:
+    - phpstan-baseline.neon

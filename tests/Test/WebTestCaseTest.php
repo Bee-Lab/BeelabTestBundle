@@ -82,7 +82,9 @@ final class WebTestCaseTest extends TestCase
         $method->setAccessible(true);
         $method->invoke(self::$mock, false);
 
-        self::assertNotNull($file = $vfs->getChild('public/test.html'));
+        /** @var \org\bovigo\vfs\vfsStreamFile $file */
+        $file = $vfs->getChild('public/test.html');
+        self::assertNotNull($file);
         self::assertEquals('Response content', $file->getContent());
     }
 
@@ -204,7 +206,7 @@ final class WebTestCaseTest extends TestCase
     public function testLoadFixtures(): void
     {
         self::markTestIncomplete('Need to mock `loadFixtureClass` method correctly');
-
+        /*
         self::$mock
             ->expects(self::exactly(2))
             ->method('loadFixtureClass');
@@ -228,6 +230,7 @@ final class WebTestCaseTest extends TestCase
         $method = new \ReflectionMethod(self::$mock, 'loadFixtures');
         $method->setAccessible(true);
         $method->invoke(self::$mock, ['Fixture1', 'Fixture2'], 'My\\NameSpace\\', 'my.manager');
+        */
     }
 
     public function testAjax(): void
@@ -254,6 +257,7 @@ final class WebTestCaseTest extends TestCase
     public function testAssertMailSent(): void
     {
         self::markTestIncomplete('cannot mock static call to "assertEquals"');
+        /*
         $swiftmailerProfiler = $this->createMock(MessageDataCollector::class);
         $swiftmailerProfiler
             ->expects(self::once())
@@ -278,6 +282,7 @@ final class WebTestCaseTest extends TestCase
         $method = new \ReflectionMethod(self::$mock, 'assertMailSent');
         $method->setAccessible(true);
         $method->invoke(self::$mock, 1);
+        */
     }
 
     public function testClickLinkByData(): void
