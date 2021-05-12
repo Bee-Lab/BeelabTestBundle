@@ -115,7 +115,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected static function login(string $username = 'admin1@example.org', ?string $firewall = null, ?string $service = null): void
     {
         $service = $service ?? static::$container->getParameter('beelab_test.user_service');
-        if (null === $user = static::$container->get($service)->loadUserByUsername($username)) {
+        $object = static::$container->get($service);
+        $user = \is_callable([$object, 'loadUserByIdentifier']) ? $object->loadUserByIdentifier($username) : $object->loadUserByUsername($username);
+        if (null === $user) {
             throw new \InvalidArgumentException(\sprintf('Username %s not found.', $username));
         }
         $firewall = $firewall ?? static::$container->getParameter('beelab_test.firewall');
@@ -184,7 +186,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      * Load fixtures as an array of "names"
      * This is inspired by https://github.com/liip/LiipFunctionalTestBundle.
      *
-     * @param array $fixtures e.g. ['UserData', 'OrderData']
+     * @param array<int, string> $fixtures e.g. ['UserData', 'OrderData']
      *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \InvalidArgumentException
@@ -321,11 +323,11 @@ abstract class WebTestCase extends SymfonyWebTestCase
         self::$client->request($method, $formAction, [$name => $values], $filesValues);
     }
 
-    protected static function setSessionException(): void
+    protected static function setSessionException(string $msg = 'error...'): void
     {
         /** @var \Symfony\Component\HttpFoundation\Session\SessionInterface $session */
         $session = self::$container->get('session');
-        $session->set('_security.last_error', new AuthenticationServiceException('error...'));
+        $session->set('_security.last_error', new AuthenticationServiceException($msg));
         $session->save();
         $cookie = new Cookie($session->getName(), $session->getId());
         self::$client->getCookieJar()->set($cookie);

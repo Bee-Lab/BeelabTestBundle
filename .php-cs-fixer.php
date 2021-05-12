@@ -6,17 +6,15 @@ $finder = PhpCsFixer\Finder::create()
     ->notPath('FakeFixtureDependent.php')
 ;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        '@PHP71Migration:risky' => true,
         '@PHP73Migration' => true,
-        '@PHPUnit75Migration:risky' => true,
-        'ordered_imports' => true,
+        '@PHPUnit84Migration:risky' => true,
         'declare_strict_types' => false,
-        'native_function_invocation' => true,
+        'native_function_invocation' => ['include' => ['@all']],
         'php_unit_mock_short_will_return' => true,
     ])
     ->setFinder($finder)

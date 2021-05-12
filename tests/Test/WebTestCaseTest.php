@@ -132,6 +132,30 @@ final class WebTestCaseTest extends TestCase
         $method->invoke(self::$mock, 'admin1@example.org', 'main', 'beelab_user.manager');
     }
 
+    public function testLoginWithUserNotFound(): void
+    {
+        $repository = $this
+            ->getMockBuilder(UserProviderInterface::class)
+            ->setMethods(['loadUserByUsername', 'refreshUser', 'supportsClass'])
+            ->getMock()
+        ;
+        $repository
+            ->expects(self::once())
+            ->method('loadUserByUsername')
+            ->willReturn(null)
+        ;
+        self::$container
+            ->method('get')
+            ->with('beelab_user.manager')
+            ->willReturn($repository)
+        ;
+        $method = new \ReflectionMethod(self::$mock, 'login');
+        $method->setAccessible(true);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Username notfound@example.org not found.');
+        $method->invoke(self::$mock, 'notfound@example.org', 'main', 'beelab_user.manager');
+    }
+
     public function testGetFile(): void
     {
         // Call `getFile` method
