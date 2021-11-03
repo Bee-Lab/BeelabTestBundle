@@ -6,12 +6,7 @@ parameters:
 			path: src/DependencyInjection/Configuration.php
 
 		-
-			message: "#^Parameter \\$manager of method Beelab\\\\TestBundle\\\\Tests\\\\FakeFixture\\:\\:load\\(\\) has invalid typehint type Doctrine\\\\Common\\\\Persistence\\\\ObjectManager\\.$#"
+			message: "#^PHPDoc tag @throws with type Doctrine\\\\DBAL\\\\DBALException\\|InvalidArgumentException is not subtype of Throwable$#"
 			count: 1
-			path: tests/FakeFixture.php
-
-		-
-			message: "#^Parameter \\$manager of method Beelab\\\\TestBundle\\\\Tests\\\\FakeFixtureDependent\\:\\:load\\(\\) has invalid typehint type Doctrine\\\\Common\\\\Persistence\\\\ObjectManager\\.$#"
-			count: 1
-			path: tests/FakeFixtureDependent.php
+			path: src/Test/WebTestCase.php
 

@@ -11,10 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class AbstractContainerAwareFixture extends AbstractFixture implements ContainerAwareInterface
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
     public function setContainer(ContainerInterface $container = null): void
     {

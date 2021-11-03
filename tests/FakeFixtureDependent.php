@@ -2,13 +2,13 @@
 
 namespace Beelab\TestBundle\Tests;
 
+use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
 use Doctrine\Persistence\ObjectManager;
 
 if (\interface_exists(LegacyObjectManager::class)) {
-    final class FakeFixtureDependent implements DependentFixtureInterface, FixtureInterface
+    final class FakeFixtureDependent extends AbstractFixture implements DependentFixtureInterface
     {
         public function getDependencies(): array
         {
@@ -23,7 +23,7 @@ if (\interface_exists(LegacyObjectManager::class)) {
         }
     }
 } else {
-    final class FakeFixtureDependent implements DependentFixtureInterface, FixtureInterface
+    final class FakeFixtureDependent extends AbstractFixture implements DependentFixtureInterface
     {
         public function getDependencies(): array
         {

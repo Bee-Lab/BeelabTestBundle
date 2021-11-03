@@ -29,20 +29,17 @@ jobs:
         runs-on: ubuntu-20.04
         strategy:
             matrix:
-                php:
-                    - '7.3'
-                    - '7.4'
-                    - '8.0'
                 include:
                     - description: 'Symfony 4.4'
-                      php: '7.3'
-                      composer_option: '--prefer-lowest'
-                    - description: 'Symfony 5.1'
                       php: '7.4'
-                      symfony: 5.1.*
-                    - description: 'Symfony 5.2'
+                      symfony: '4.4.*'
+                      composer_option: '--prefer-lowest'
+                    - description: 'Symfony 5.3'
+                      php: '7.4'
+                      symfony: '5.3.*'
+                    - description: 'Symfony 5.4'
                       php: '8.0'
-                      symfony: 5.2.*
+                      symfony: '5.4.*@dev'
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
@@ -56,13 +53,26 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-            - run: |
-                  sed -ri '/symfony\/swiftmailer-bundle/! s/"symfony\/(.+)": "(.+)"/"symfony\/\1": "'${{ matrix.symfony }}'"/' composer.json;
+            - name: require specific Symfony version
               if: matrix.symfony
-            - run: composer require --dev doctrine/lexer:v1.0.1 --no-update
-              if: matrix.composer_option == '--prefer-lowest'
-            - run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}
-            - run: bin/phpunit --coverage-clover=clover.xml
-            - uses: codecov/codecov-action@v1
+              run: |
+                  sed -ri '/symfony\/swiftmailer-bundle/! s/"symfony\/(.+)": "(.+)"/"symfony\/\1": "'${{ matrix.symfony }}'"/' composer.json;
+                  composer require --dev doctrine/lexer:v1.0.1 --no-update
+            - name: use possible dev deps
+              if: contains(matrix.symfony, '@dev')
+              run: |
+                  composer config minimum-stability dev
+                  composer config prefer-stable true
+            - name: remove cs-fixer for Symfony 6
+              if: contains(matrix.symfony, '6.0.*@dev')
+              run: |
+                  composer remove --dev friendsofphp/php-cs-fixer --no-update
+                  composer remove --dev symfony/swiftmailer-bundle --no-update
+            - name: update vendors
+              run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}
+            - name: run tests
+              run: bin/phpunit --coverage-clover=clover.xml
+            - name: save test coverage
+              uses: codecov/codecov-action@v1
               with:
                   files: ./clover.xml

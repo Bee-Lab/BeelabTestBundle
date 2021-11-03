@@ -2,11 +2,14 @@
 
 namespace Beelab\TestBundle\Test;
 
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as Loader;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Console\Command\Command;
@@ -21,30 +24,15 @@ use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 
 abstract class WebTestCase extends SymfonyWebTestCase
 {
-    /**
-     * @var EntityManagerInterface|null
-     */
-    protected static $em;
+    protected static ?EntityManagerInterface $em = null;
 
-    /**
-     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
-     */
-    protected static $client;
+    protected static ?KernelBrowser $client = null;
 
-    /**
-     * @var \Doctrine\Common\DataFixtures\AbstractFixture|null
-     */
-    private $fixture;
+    private ?AbstractFixture $fixture = null;
 
-    /**
-     * @var string|null
-     */
-    protected static $authUser;
+    protected static ?string $authUser = null;
 
-    /**
-     * @var string|null
-     */
-    protected static $authPw;
+    protected static ?string $authPw = null;
 
     protected function setUp(): void
     {
@@ -221,13 +209,15 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function assertMailSent(int $num, string $message = ''): void
     {
-        if (false !== $profile = self::$client->getProfile()) {
-            /** @var \Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector $collector */
-            $collector = $profile->getCollector('swiftmailer');
-            self::assertEquals($num, $collector->getMessageCount(), $message);
-        } else {
+        if (false === $profile = self::$client->getProfile()) {
             self::markTestSkipped('Profiler not enabled.');
         }
+        /** @var \Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector|null $collector */
+        $collector = $profile->getCollector('swiftmailer');
+        if (null === $collector) {
+            self::markTestSkipped('Swiftmailer profiler not found.');
+        }
+        self::assertEquals($num, $collector->getMessageCount(), $message);
     }
 
     /**
@@ -287,6 +277,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
     {
         if (null === $this->fixture) {
             throw new \RuntimeException('Load some fixtures before.');
+        }
+        if (!$this->fixture instanceof DependentFixtureInterface) {
+            throw new \RuntimeException('Fixture is not dependent.');
         }
         if (!$this->fixture->hasReference($name)) {
             throw new \InvalidArgumentException(\sprintf('Reference "%s" not found.', $name));
