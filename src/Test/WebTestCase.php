@@ -3,7 +3,6 @@
 namespace Beelab\TestBundle\Test;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,10 +13,12 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
@@ -26,13 +27,16 @@ abstract class WebTestCase extends SymfonyWebTestCase
 {
     protected static ?EntityManagerInterface $em = null;
 
-    protected static ?KernelBrowser $client = null;
+    protected static KernelBrowser $client;
 
     private ?AbstractFixture $fixture = null;
 
     protected static ?string $authUser = null;
 
     protected static ?string $authPw = null;
+
+    /** @var ContainerInterface */
+    protected static $container = null;
 
     protected function setUp(): void
     {
@@ -102,15 +106,15 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function login(string $username = 'admin1@example.org', ?string $firewall = null, ?string $service = null): void
     {
-        $service = $service ?? static::$container->getParameter('beelab_test.user_service');
+        $service ??= static::$container->getParameter('beelab_test.user_service');
         $object = static::$container->get($service);
         $user = \is_callable([$object, 'loadUserByIdentifier']) ? $object->loadUserByIdentifier($username) : $object->loadUserByUsername($username);
         if (null === $user) {
             throw new \InvalidArgumentException(\sprintf('Username %s not found.', $username));
         }
-        $firewall = $firewall ?? static::$container->getParameter('beelab_test.firewall');
-        $token = new UsernamePasswordToken($user, null, $firewall, $user->getRoles());
-        $session = static::$container->get('session');
+        $firewall ??= static::$container->getParameter('beelab_test.firewall');
+        $token = new UsernamePasswordToken($user, $firewall, $user->getRoles());
+        $session = self::getSession();
         $session->set('_security_'.$firewall, \serialize($token));
         $session->save();
         $cookie = new Cookie($session->getName(), $session->getId());
@@ -270,16 +274,11 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     /**
      * Get an entity by its fixtures reference name.
-     *
-     * @return mixed
      */
-    protected function getReference(string $name)
+    protected function getReference(string $name): object
     {
         if (null === $this->fixture) {
             throw new \RuntimeException('Load some fixtures before.');
-        }
-        if (!$this->fixture instanceof DependentFixtureInterface) {
-            throw new \RuntimeException('Fixture is not dependent.');
         }
         if (!$this->fixture->hasReference($name)) {
             throw new \InvalidArgumentException(\sprintf('Reference "%s" not found.', $name));
@@ -318,8 +317,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     protected static function setSessionException(string $msg = 'error...'): void
     {
-        /** @var \Symfony\Component\HttpFoundation\Session\SessionInterface $session */
-        $session = self::$container->get('session');
+        $session = self::getSession();
         $session->set('_security.last_error', new AuthenticationServiceException($msg));
         $session->save();
         $cookie = new Cookie($session->getName(), $session->getId());
@@ -401,5 +399,16 @@ abstract class WebTestCase extends SymfonyWebTestCase
         }
         $loader->addFixture($fixture);
         $this->fixture = $fixture;
+    }
+
+    private static function getSession(): SessionInterface
+    {
+        if (static::$container->has('session.factory')) {
+            return static::$container->get('session.factory')->createSession();
+        }
+        if (static::$container->has('session')) {
+            return static::$container->get('session');
+        }
+        throw new \UnexpectedValueException('Cannot get session from container.');
     }
 }

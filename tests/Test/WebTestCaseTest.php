@@ -3,7 +3,6 @@
 namespace Beelab\TestBundle\Tests;
 
 use Beelab\TestBundle\Test\WebTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
@@ -15,7 +14,9 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Link;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Profiler\Profile;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 final class WebTestCaseTest extends TestCase
@@ -90,26 +91,28 @@ final class WebTestCaseTest extends TestCase
 
     public function testLogin(): void
     {
-        $user = $this->getMockBuilder('stdClass')->setMethods(['getRoles', '__toString'])->getMock();
+        $user = $this->getMockBuilder(UserInterface::class)->getMock();
         $user
             ->expects(self::once())
             ->method('getRoles')
             ->willReturn([]);
-        $user
-            ->method('__toString')
-            ->willReturn('user');
 
         $repository = $this
             ->getMockBuilder(UserProviderInterface::class)
-            ->setMethods(['loadUserByUsername', 'refreshUser', 'supportsClass'])
+            ->setMethods(['loadUserByIdentifier', 'loadUserByUsername', 'refreshUser', 'supportsClass'])
             ->getMock()
         ;
         $repository
             ->expects(self::once())
-            ->method('loadUserByUsername')
+            ->method('loadUserByIdentifier')
             ->willReturn($user);
 
-        $session = $this->getMockBuilder('stdClass')->setMethods(['getId', 'getName', 'set', 'save'])->getMock();
+        $session = $this->createMock(SessionInterface::class);
+
+        self::$container
+            ->method('has')
+            ->withConsecutive(['session.factory'], ['session'])
+            ->will(self::onConsecutiveCalls(false, true));
 
         self::$container
             ->method('get')
@@ -136,23 +139,26 @@ final class WebTestCaseTest extends TestCase
     {
         $repository = $this
             ->getMockBuilder(UserProviderInterface::class)
-            ->setMethods(['loadUserByUsername', 'refreshUser', 'supportsClass'])
+            ->setMethods(['loadUserByIdentifier', 'loadUserByUsername', 'refreshUser', 'supportsClass'])
             ->getMock()
         ;
         $repository
             ->expects(self::once())
-            ->method('loadUserByUsername')
-            ->willReturn(null)
+            ->method('loadUserByIdentifier')
+            ->willThrowException(new UserNotFoundException())
         ;
+
+        $session = $this->createMock(SessionInterface::class);
+
         self::$container
             ->method('get')
-            ->with('beelab_user.manager')
-            ->willReturn($repository)
+            ->withConsecutive(['beelab_user.manager'], ['session'])
+            ->will(self::onConsecutiveCalls($repository, $session))
         ;
+
         $method = new \ReflectionMethod(self::$mock, 'login');
         $method->setAccessible(true);
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Username notfound@example.org not found.');
+        $this->expectException(UserNotFoundException::class);
         $method->invoke(self::$mock, 'notfound@example.org', 'main', 'beelab_user.manager');
     }
 
