@@ -42,6 +42,18 @@ final class MyTest extends WebTestCase
 }
 ```
 
+With Symfony 6, you'll also need to define an alias in your `config/services_test.yaml` file:
+
+```yaml
+services:
+    _defaults:
+        public: true
+        autowire: true
+
+    test.session.factory:
+        alias: session.factory
+```
+
 ## Features
 
 ### General

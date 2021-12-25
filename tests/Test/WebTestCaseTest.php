@@ -111,8 +111,8 @@ final class WebTestCaseTest extends TestCase
 
         self::$container
             ->method('has')
-            ->withConsecutive(['session.factory'], ['session'])
-            ->will(self::onConsecutiveCalls(false, true));
+            ->withConsecutive(['session.factory'], ['test.session.factory'], ['session'])
+            ->will(self::onConsecutiveCalls(false, false, true));
 
         self::$container
             ->method('get')

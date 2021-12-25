@@ -406,6 +406,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
         if (static::$container->has('session.factory')) {
             return static::$container->get('session.factory')->createSession();
         }
+        if (static::$container->has('test.session.factory')) {
+            return static::$container->get('test.session.factory')->createSession();
+        }
         if (static::$container->has('session')) {
             return static::$container->get('session');
         }
