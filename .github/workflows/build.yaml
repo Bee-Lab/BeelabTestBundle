@@ -61,7 +61,6 @@ jobs:
               if: matrix.symfony
               run: |
                   sed -ri '/symfony\/swiftmailer-bundle/! s/"symfony\/(.+)": "(.+)"/"symfony\/\1": "'${{ matrix.symfony }}'"/' composer.json;
-                  composer require --dev doctrine/lexer:v1.0.1 --no-update
             - name: use possible dev deps
               if: contains(matrix.symfony, '@dev')
               run: |

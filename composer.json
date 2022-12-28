@@ -24,7 +24,7 @@
         "symfony/dom-crawler": "^5.4 || ^6.0"
     },
     "require-dev": {
-        "doctrine/lexer": "^1.2",
+        "doctrine/lexer": "^1.2 || ^2.0 || ^3.0",
         "doctrine/orm": "^2.8",
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^9.5",
