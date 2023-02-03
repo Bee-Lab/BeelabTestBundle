@@ -82,7 +82,7 @@ jobs:
                   parallel: true
 
     finish:
-        needs: test
+        needs: tests
         runs-on: ubuntu-22.04
         steps:
             - name: Coveralls Finished
