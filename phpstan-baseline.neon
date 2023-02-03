@@ -14,8 +14,3 @@ parameters:
 			message: "#SwiftmailerBundle#"
 			count: 2
 			path: src/Test/WebTestCase.php
-
-		-
-			message: "#^Parameter \\#1 \\$fixtures of method Doctrine\\\\Common\\\\DataFixtures\\\\Executor\\\\ORMExecutor\\:\\:execute\\(\\) expects array\\<Doctrine\\\\Common\\\\DataFixtures\\\\FixtureInterface\\>, array\\<class\\-string\\<Doctrine\\\\Common\\\\DataFixtures\\\\OrderedFixtureInterface\\>\\|int, Doctrine\\\\Common\\\\DataFixtures\\\\OrderedFixtureInterface\\> given\\.$#"
-			count: 1
-			path: src/Test/WebTestCase.php

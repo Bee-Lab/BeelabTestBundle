@@ -74,19 +74,3 @@ jobs:
               uses: codecov/codecov-action@v1
               with:
                   files: ./clover.xml
-            - name: Coveralls Parallel
-              uses: coverallsapp/github-action@master
-              with:
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
-                  flag-name: run-${{ matrix.php }}
-                  parallel: true
-
-    finish:
-        needs: tests
-        runs-on: ubuntu-22.04
-        steps:
-            - name: Coveralls Finished
-              uses: coverallsapp/github-action@master
-              with:
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
-                  parallel-finished: true
