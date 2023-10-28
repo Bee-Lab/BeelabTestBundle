@@ -31,19 +31,13 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - description: 'Symfony 5.4'
-                      php: '7.4'
-                      symfony: '5.4.*'
-                      composer_option: '--prefer-lowest'
-                    - description: 'Symfony 6.0'
-                      php: '8.0'
-                      symfony: '6.0.*'
-                    - description: 'Symfony 6.1'
+                    - description: 'Symfony 6.4'
                       php: '8.1'
-                      symfony: '6.1.*'
-                    - description: 'Symfony 6.2'
+                      symfony: '6.4.*@dev'
+                      composer_option: '--prefer-lowest'
+                    - description: 'Symfony 7.0'
                       php: '8.2'
-                      symfony: '6.2.*'
+                      symfony: '7.0.*@dev'
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
@@ -60,7 +54,7 @@ jobs:
             - name: require specific Symfony version
               if: matrix.symfony
               run: |
-                  sed -ri '/symfony\/swiftmailer-bundle/! s/"symfony\/(.+)": "(.+)"/"symfony\/\1": "'${{ matrix.symfony }}'"/' composer.json;
+                  sed -ri 's/"symfony\/(.+)": "(.+)"/"symfony\/\1": "'${{ matrix.symfony }}'"/' composer.json;
             - name: use possible dev deps
               if: contains(matrix.symfony, '@dev')
               run: |

@@ -42,7 +42,7 @@ final class MyTest extends WebTestCase
 }
 ```
 
-With Symfony 6, you'll also need to define an alias in your `config/services_test.yaml` file:
+With Symfony 6+, you'll also need to define an alias in your `config/services_test.yaml` file:
 
 ```yaml
 services:
@@ -142,11 +142,11 @@ services:
   In case of a select, note that you need to add `option` after your field's id, and you can pass a third 
   optional parameter with the position.
   If, for example, you want to retrieve the value of your second option in a `bar` field of a `foo` form
-  (maybe beacuse the first one is empty), you can do `self::getFormValue('foo_bar option', 1)`
+  (maybe because the first one is empty), you can do `self::getFormValue('foo_bar option', 1)`
 
 * Forms with collections
   
-  Tipically, a form with a collection is a problem during tests, because the values of collections are not displayed
+  Typically, a form with a collection is a problem during tests, because the values of collections are not displayed
   in the HTML (but, instead, added via JavaScript).
   You can solve such problema by visiting form URL and then using `self::postForm('your_form_name', $values)`
   (where`$values` can include collection values).
@@ -154,7 +154,7 @@ services:
 * Selecting checkboxes
 
   You can check many checkboxes using `self::tickCheckboxes($form, $values)`, using for values the same
-  array you would use for a select multiple. This allows you to easily switch bewteen `true` and `false`
+  array you would use for a select multiple. This allows you to easily switch between `true` and `false`
   in `multiple` option of `ChoiceType`.
 
 ### Fixtures-related
@@ -194,14 +194,6 @@ services:
   You can also pass an array of checkboxes (`tickCheckboxes` method is used internally) as additional argument,
   for example:
   `self::submitFormByData('submit', $values, [], 'POST', [], ['foo[bar]' => ['value1', 'value2', 'value3']])`
-
-### E-mail related
-
-* Mail sent assertion
-
-  Check how many mails has been sent with `self::assertMailSent(1)` (or 2, 3, etc.).
-  You need to call `$self::client->enableProfiler()` before.
-  Currently, this is working only with SwiftMailer.
 
 ### Command related
 
