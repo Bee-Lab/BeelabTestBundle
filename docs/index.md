@@ -6,7 +6,7 @@ BeelabTestBundle Documentation
 Run from terminal:
 
 ```bash
-$ composer require --dev beelab/test-bundle
+composer require --dev beelab/test-bundle
 ```
 
 Bundle should be enabled automatically by Flex.
