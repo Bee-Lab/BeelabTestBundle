@@ -1,12 +1,14 @@
 UPGRADE
 =======
 
-From 5.4 to 5.5
+From 5.4 to 6.0
 ---------------
 
 The `assertMailSent` method has been removed, since Swiftmailer is not supported anymore. You should use the
 Symfony Mailer component instead, and the `assertEmailCount` method.
 New minimum requirements are PHP 8.1 and Symfony 6.4.
+
+The `AbstractContainerAwareFixture` was removed. Inject your dependencies directly instead of the whole container.
 
 From 4.0 to 5.0
 ---------------

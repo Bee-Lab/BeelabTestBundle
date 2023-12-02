@@ -165,12 +165,6 @@ services:
   Dependencies are resolved (as long as you implement `DependentFixtureInterface`), so you don't need to explicitly
   load all your fixtures.
 
-* AbstractContainerAwareFixture
-
-  When you need the service container in your fixtures, instead of implementing
-  `Symfony\Component\DependencyInjection\ContainerAwareInterface`, you can extend
-  `Beelab\TestBundle\DataFixtures\AbstractContainerAwareFixture`.
-
 * Get entity by reference
 
   If you need an entity in a functional test, you can get it by calling `$this->getReference('refname')`, where
