@@ -3,11 +3,10 @@
 namespace Beelab\TestBundle\Tests;
 
 use Beelab\TestBundle\Test\WebTestCase;
+use Doctrine\Common\DataFixtures\Loader;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -219,7 +218,7 @@ final class WebTestCaseTest extends TestCase
 
     public function testLoadFixtureClass(): void
     {
-        $loader = $this->getMockBuilder(ContainerAwareLoader::class)->disableOriginalConstructor()->getMock();
+        $loader = $this->getMockBuilder(Loader::class)->disableOriginalConstructor()->getMock();
 
         // Call `loadFixtureClass` method
         $method = new \ReflectionMethod(self::$mock, 'loadFixtureClass');
@@ -267,8 +266,8 @@ final class WebTestCaseTest extends TestCase
     {
         self::$client
             ->expects(self::once())
-            ->method('request')
-            ->with('GET', 'http://ajax/', [], [], ['HTTP_X-Requested-With' => 'XMLHttpRequest'])
+            ->method('xmlHttpRequest')
+            ->with('GET', 'http://ajax/')
             ->willReturn(new Crawler());
 
         // Call `ajax` method
@@ -282,37 +281,6 @@ final class WebTestCaseTest extends TestCase
     public function testCommandTest(): void
     {
         self::markTestIncomplete('Not implemented');
-    }
-
-    public function testAssertMailSent(): void
-    {
-        self::markTestIncomplete('cannot mock static call to "assertEquals"');
-        /*
-        $swiftmailerProfiler = $this->createMock(MessageDataCollector::class);
-        $swiftmailerProfiler
-            ->expects(self::once())
-            ->method('getMessageCount')
-            ->willReturn(1);
-
-        $profiler = $this->getMockBuilder(Profile::class)->disableOriginalConstructor()->getMock();
-        $profiler
-            ->expects(self::once())
-            ->method('getCollector')
-            ->with('swiftmailer')
-            ->willReturn($swiftmailerProfiler);
-
-        self::$client
-            ->expects(self::once())
-            ->method('getProfile')
-            ->willReturn($profiler);
-
-        self::$mock->method('assertEquals')->willReturn(true);
-
-        // Call `assertMailSent` method
-        $method = new \ReflectionMethod(self::$mock, 'assertMailSent');
-        $method->setAccessible(true);
-        $method->invoke(self::$mock, 1);
-        */
     }
 
     public function testClickLinkByData(): void

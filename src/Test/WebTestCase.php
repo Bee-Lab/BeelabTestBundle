@@ -4,9 +4,9 @@ namespace Beelab\TestBundle\Test;
 
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as Loader;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
@@ -36,7 +36,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected static ?string $authPw = null;
 
     /** @var ContainerInterface */
-    protected static $container = null;
+    protected static $container;
 
     protected function setUp(): void
     {
@@ -104,7 +104,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @throws \InvalidArgumentException
      */
-    protected static function login(string $username = 'admin1@example.org', ?string $firewall = null, ?string $service = null): void
+    protected static function login(string $username = 'admin1@example.org', string $firewall = null, string $service = null): void
     {
         $service ??= static::$container->getParameter('beelab_test.user_service');
         $object = static::$container->get($service);
@@ -186,42 +186,25 @@ abstract class WebTestCase extends SymfonyWebTestCase
     protected function loadFixtures(
         array $fixtures,
         string $namespace = 'App\\DataFixtures\\ORM\\',
-        ?string $managerService = null,
-        bool $append = false
+        string $managerService = null,
+        bool $append = false,
     ): void {
         if (null !== $managerService) {
             $manager = static::$container->get($managerService);
             if (!$manager instanceof EntityManagerInterface) {
-                throw new \InvalidArgumentException(\sprintf('The service "%s" is not an EntityManager', \get_class($manager)));
+                throw new \InvalidArgumentException(\sprintf('The service "%s" is not an EntityManager', $manager::class));
             }
         } else {
             $manager = self::$em;
         }
         $manager->getConnection()->executeStatement('SET foreign_key_checks = 0');
-        $loader = new Loader(static::$container);
+        $loader = new Loader();
         foreach ($fixtures as $fixture) {
             $this->loadFixtureClass($loader, $namespace.$fixture);
         }
         $executor = new ORMExecutor($manager, new ORMPurger());
         $executor->execute($loader->getFixtures(), $append);
         $manager->getConnection()->executeStatement('SET foreign_key_checks = 1');
-    }
-
-    /**
-     * Assert that $num mail has been sent
-     * Need self::$client->enableProfiler() before calling.
-     */
-    protected static function assertMailSent(int $num, string $message = ''): void
-    {
-        if (false === $profile = self::$client->getProfile()) {
-            self::markTestSkipped('Profiler not enabled.');
-        }
-        /** @var \Symfony\Bundle\SwiftmailerBundle\DataCollector\MessageDataCollector|null $collector */
-        $collector = $profile->getCollector('swiftmailer');
-        if (null === $collector) {
-            self::markTestSkipped('Swiftmailer profiler not found.');
-        }
-        self::assertEquals($num, $collector->getMessageCount(), $message);
     }
 
     /**
@@ -238,7 +221,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function ajax(string $method, string $uri, array $params = [], array $files = []): Crawler
     {
-        return self::$client->request($method, $uri, $params, $files, ['HTTP_X-Requested-With' => 'XMLHttpRequest']);
+        return self::$client->xmlHttpRequest($method, $uri, $params, $files);
     }
 
     /**
@@ -255,7 +238,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         Command $command,
         array $arguments = [],
         array $otherCommands = [],
-        array $inputs = null
+        array $inputs = null,
     ): string {
         $application = new Application(self::$client->getKernel());
         $application->add($command);
@@ -294,7 +277,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     {
         $name = 'file_'.$file.'.'.$ext;
         $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
-        \file_put_contents($path, 0 === \strpos($mime, 'text') ? $data : \base64_decode($data));
+        \file_put_contents($path, \str_starts_with($mime, 'text') ? $data : \base64_decode($data));
 
         return new UploadedFile($path, $name, $mime);
     }
@@ -324,7 +307,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         self::$client->getCookieJar()->set($cookie);
     }
 
-    protected static function clickLinkByData(string $dataName, ?string $parent = null): Crawler
+    protected static function clickLinkByData(string $dataName, string $parent = null): Crawler
     {
         $selector = (null === $parent ? '' : $parent.' ').'a[data-'.$dataName.']';
         $linkNode = self::$client->getCrawler()->filter($selector);
@@ -332,7 +315,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         return self::$client->click($linkNode->link());
     }
 
-    protected static function clickLinkBySelectorText(string $linkText, ?string $parent = null): Crawler
+    protected static function clickLinkBySelectorText(string $linkText, string $parent = null): Crawler
     {
         $selector = (null === $parent ? '' : $parent.' ').'a:contains("'.$linkText.'")';
         $linkNode = self::$client->getCrawler()->filter($selector);
@@ -349,7 +332,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         array $values = [],
         string $method = 'POST',
         array $serverParams = [],
-        array $checkboxValues = []
+        array $checkboxValues = [],
     ): Crawler {
         $buttonNode = self::$client->getCrawler()->filter('button[data-'.$dataName.']');
         $form = $buttonNode->form($values, $method);
@@ -374,8 +357,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
         }
     }
 
-    private static function findCheckbox(Form $form, string $name, string $value): ?ChoiceFormField
+    private static function findCheckbox(Form $form, string $name, string $value): ChoiceFormField
     {
+        /** @var ChoiceFormField $field */
         foreach ($form->offsetGet($name) as $field) {
             $available = $field->availableOptionValues();
             if ($value === \reset($available)) {
