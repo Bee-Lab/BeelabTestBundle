@@ -38,6 +38,9 @@ jobs:
                     - description: 'Symfony 7.0'
                       php: '8.2'
                       symfony: '7.0.*'
+                    - description: 'Symfony 7.1'
+                      php: '8.3'
+                      symfony: '7.1.*'
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
