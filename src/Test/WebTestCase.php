@@ -26,17 +26,11 @@ use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 abstract class WebTestCase extends SymfonyWebTestCase
 {
     protected static ?EntityManagerInterface $em = null;
-
     protected static KernelBrowser $client;
-
     private ?AbstractFixture $fixture = null;
-
     protected static ?string $authUser = null;
-
     protected static ?string $authPw = null;
-
-    /** @var ContainerInterface */
-    protected static $container;
+    protected static ?ContainerInterface $container = null;
 
     protected function setUp(): void
     {
@@ -64,15 +58,13 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     protected function tearDown(): void
     {
-        if (null !== self::$em) {
-            self::$em->getConnection()->close();
-        }
+        self::$em?->getConnection()->close();
         parent::tearDown();
     }
 
     /**
      * Save request output and show it in the browser
-     * See http://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
+     * See https://web.archive.org/web/20190205012632/https://giorgiocefaro.com/blog/test-symfony-and-automatically-open-the-browser-with-the-response-content
      * You can define a "domain" parameter with the current domain of your app.
      */
     protected static function saveOutput(bool $delete = true): void
@@ -104,7 +96,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @throws \InvalidArgumentException
      */
-    protected static function login(string $username = 'admin1@example.org', string $firewall = null, string $service = null): void
+    protected static function login(string $username = 'admin1@example.org', ?string $firewall = null, ?string $service = null): void
     {
         $service ??= static::$container->getParameter('beelab_test.user_service');
         $object = static::$container->get($service);
@@ -180,13 +172,13 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @param array<int, string> $fixtures e.g. ['UserData', 'OrderData']
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      * @throws \InvalidArgumentException
      */
     protected function loadFixtures(
         array $fixtures,
         string $namespace = 'App\\DataFixtures\\ORM\\',
-        string $managerService = null,
+        ?string $managerService = null,
         bool $append = false,
     ): void {
         if (null !== $managerService) {
@@ -238,7 +230,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         Command $command,
         array $arguments = [],
         array $otherCommands = [],
-        array $inputs = null,
+        ?array $inputs = null,
     ): string {
         $application = new Application(self::$client->getKernel());
         $application->add($command);
@@ -307,7 +299,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         self::$client->getCookieJar()->set($cookie);
     }
 
-    protected static function clickLinkByData(string $dataName, string $parent = null): Crawler
+    protected static function clickLinkByData(string $dataName, ?string $parent = null): Crawler
     {
         $selector = (null === $parent ? '' : $parent.' ').'a[data-'.$dataName.']';
         $linkNode = self::$client->getCrawler()->filter($selector);
@@ -315,7 +307,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         return self::$client->click($linkNode->link());
     }
 
-    protected static function clickLinkBySelectorText(string $linkText, string $parent = null): Crawler
+    protected static function clickLinkBySelectorText(string $linkText, ?string $parent = null): Crawler
     {
         $selector = (null === $parent ? '' : $parent.' ').'a:contains("'.$linkText.'")';
         $linkNode = self::$client->getCrawler()->filter($selector);

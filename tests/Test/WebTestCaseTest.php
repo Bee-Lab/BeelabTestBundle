@@ -5,6 +5,7 @@ namespace Beelab\TestBundle\Tests;
 use Beelab\TestBundle\Test\WebTestCase;
 use Doctrine\Common\DataFixtures\Loader;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\BrowserKit\CookieJar;
@@ -20,35 +21,22 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 final class WebTestCaseTest extends TestCase
 {
-    /**
-     * @var WebTestCase&\PHPUnit\Framework\MockObject\MockObject
-     */
-    protected static $mock;
-
-    /**
-     * @var ContainerInterface&\PHPUnit\Framework\MockObject\MockObject
-     */
-    protected static $container;
-
-    /**
-     * @var KernelBrowser&\PHPUnit\Framework\MockObject\MockObject
-     */
-    protected static $client;
+    protected static WebTestCase&MockObject $mock;
+    protected static ContainerInterface&MockObject $container;
+    protected static KernelBrowser&MockObject $client;
 
     protected function setUp(): void
     {
         self::$container = $this->createMock(ContainerInterface::class);
-        self::$client = $this->getMockBuilder(KernelBrowser::class)->disableOriginalConstructor()->getMock();
+        self::$client = $this->createMock(KernelBrowser::class);
         self::$mock = $this->createMock(WebTestCase::class);
 
         $class = new \ReflectionClass(self::$mock);
 
         $property = $class->getProperty('container');
-        $property->setAccessible(true);
         $property->setValue(self::$mock, self::$container);
 
         $property = $class->getProperty('client');
-        $property->setAccessible(true);
         $property->setValue(self::$mock, self::$client);
     }
 
@@ -57,10 +45,16 @@ final class WebTestCaseTest extends TestCase
         $vfs = vfsStream::setup('proj', null, ['public' => []]);
 
         self::$container
-            ->expects(self::at(1))
             ->method('getParameter')
-            ->with('kernel.project_dir')
-            ->willReturn(vfsStream::url('proj'))
+            ->willReturnCallback(
+                function (string $parameter): string {
+                    return match ($parameter) {
+                        'beelab_test.browser' => 'test',
+                        'kernel.project_dir' => vfsStream::url('proj'),
+                        default => '',
+                    };
+                },
+            )
         ;
 
         $response = $this->createMock(Response::class);
@@ -79,7 +73,6 @@ final class WebTestCaseTest extends TestCase
 
         // Call `saveOutput` method
         $method = new \ReflectionMethod(self::$mock, 'saveOutput');
-        $method->setAccessible(true);
         $method->invoke(self::$mock, false);
 
         /** @var \org\bovigo\vfs\vfsStreamFile $file */
@@ -90,17 +83,13 @@ final class WebTestCaseTest extends TestCase
 
     public function testLogin(): void
     {
-        $user = $this->getMockBuilder(UserInterface::class)->getMock();
+        $user = $this->createMock(UserInterface::class);
         $user
             ->expects(self::once())
             ->method('getRoles')
             ->willReturn([]);
 
-        $repository = $this
-            ->getMockBuilder(UserProviderInterface::class)
-            ->setMethods(['loadUserByIdentifier', 'loadUserByUsername', 'refreshUser', 'supportsClass'])
-            ->getMock()
-        ;
+        $repository = $this->createMock(UserProviderInterface::class);
         $repository
             ->expects(self::once())
             ->method('loadUserByIdentifier')
@@ -110,13 +99,27 @@ final class WebTestCaseTest extends TestCase
 
         self::$container
             ->method('has')
-            ->withConsecutive(['session.factory'], ['test.session.factory'], ['session'])
-            ->will(self::onConsecutiveCalls(false, false, true));
+            ->willReturnCallback(
+                function (string $service): bool {
+                    return match ($service) {
+                        'session.factory', 'test.session.factory' => false,
+                        'session' => true,
+                        default => false,
+                    };
+                },
+            );
 
         self::$container
             ->method('get')
-            ->withConsecutive(['beelab_user.manager'], ['session'])
-            ->will(self::onConsecutiveCalls($repository, $session));
+            ->willReturnCallback(
+                function (string $service) use ($repository, $session): ?object {
+                    return match ($service) {
+                        'beelab_user.manager' => $repository,
+                        'session' => $session,
+                        default => null,
+                    };
+                },
+            );
 
         $cookieJar = $this->createMock(CookieJar::class);
 
@@ -130,17 +133,12 @@ final class WebTestCaseTest extends TestCase
 
         // Call `login` method
         $method = new \ReflectionMethod(self::$mock, 'login');
-        $method->setAccessible(true);
         $method->invoke(self::$mock, 'admin1@example.org', 'main', 'beelab_user.manager');
     }
 
     public function testLoginWithUserNotFound(): void
     {
-        $repository = $this
-            ->getMockBuilder(UserProviderInterface::class)
-            ->setMethods(['loadUserByIdentifier', 'loadUserByUsername', 'refreshUser', 'supportsClass'])
-            ->getMock()
-        ;
+        $repository = $this->createMock(UserProviderInterface::class);
         $repository
             ->expects(self::once())
             ->method('loadUserByIdentifier')
@@ -151,12 +149,18 @@ final class WebTestCaseTest extends TestCase
 
         self::$container
             ->method('get')
-            ->withConsecutive(['beelab_user.manager'], ['session'])
-            ->will(self::onConsecutiveCalls($repository, $session))
+            ->willReturnCallback(
+                function (string $service) use ($repository, $session): ?object {
+                    return match ($service) {
+                        'beelab_user.manager' => $repository,
+                        'session' => $session,
+                        default => null,
+                    };
+                },
+            )
         ;
 
         $method = new \ReflectionMethod(self::$mock, 'login');
-        $method->setAccessible(true);
         $this->expectException(UserNotFoundException::class);
         $method->invoke(self::$mock, 'notfound@example.org', 'main', 'beelab_user.manager');
     }
@@ -165,7 +169,6 @@ final class WebTestCaseTest extends TestCase
     {
         // Call `getFile` method
         $method = new \ReflectionMethod(self::$mock, 'getFile');
-        $method->setAccessible(true);
         $file = $method->invoke(self::$mock, 'test', 'text', 'csv', 'text/csv');
 
         self::assertInstanceOf(UploadedFile::class, $file);
@@ -176,7 +179,6 @@ final class WebTestCaseTest extends TestCase
     {
         // Call `getImageFile` method
         $method = new \ReflectionMethod(self::$mock, 'getImageFile');
-        $method->setAccessible(true);
         $file = $method->invoke(self::$mock);
 
         self::assertInstanceOf(UploadedFile::class, $file);
@@ -187,7 +189,6 @@ final class WebTestCaseTest extends TestCase
     {
         // Call `getPdfFile` method
         $method = new \ReflectionMethod(self::$mock, 'getPdfFile');
-        $method->setAccessible(true);
         $file = $method->invoke(self::$mock);
 
         self::assertInstanceOf(UploadedFile::class, $file);
@@ -198,7 +199,6 @@ final class WebTestCaseTest extends TestCase
     {
         // Call `getZipFile` method
         $method = new \ReflectionMethod(self::$mock, 'getZipFile');
-        $method->setAccessible(true);
         $file = $method->invoke(self::$mock);
 
         self::assertInstanceOf(UploadedFile::class, $file);
@@ -209,7 +209,6 @@ final class WebTestCaseTest extends TestCase
     {
         // Call `getTxtFile` method
         $method = new \ReflectionMethod(self::$mock, 'getTxtFile');
-        $method->setAccessible(true);
         $file = $method->invoke(self::$mock);
 
         self::assertInstanceOf(UploadedFile::class, $file);
@@ -222,11 +221,9 @@ final class WebTestCaseTest extends TestCase
 
         // Call `loadFixtureClass` method
         $method = new \ReflectionMethod(self::$mock, 'loadFixtureClass');
-        $method->setAccessible(true);
         $method->invoke(self::$mock, $loader, FakeFixtureDependent::class);
 
         $property = new \ReflectionProperty(WebTestCase::class, 'fixture');
-        $property->setAccessible(true);
         $fixture = $property->getValue(self::$mock);
 
         self::assertInstanceOf(FakeFixtureDependent::class, $fixture);
@@ -257,7 +254,6 @@ final class WebTestCaseTest extends TestCase
 
         // Call `loadFixtures` method
         $method = new \ReflectionMethod(self::$mock, 'loadFixtures');
-        $method->setAccessible(true);
         $method->invoke(self::$mock, ['Fixture1', 'Fixture2'], 'My\\NameSpace\\', 'my.manager');
         */
     }
@@ -272,7 +268,6 @@ final class WebTestCaseTest extends TestCase
 
         // Call `ajax` method
         $method = new \ReflectionMethod(self::$mock, 'ajax');
-        $method->setAccessible(true);
         $result = $method->invoke(self::$mock, 'GET', 'http://ajax/');
 
         self::assertInstanceOf(Crawler::class, $result);
@@ -293,7 +288,6 @@ final class WebTestCaseTest extends TestCase
         self::$client->expects(self::once())->method('click')->willReturn($crawler);
 
         $method = new \ReflectionMethod(self::$mock, 'clickLinkByData');
-        $method->setAccessible(true);
         $result = $method->invoke(self::$mock, 'foo');
 
         self::assertInstanceOf(Crawler::class, $result);

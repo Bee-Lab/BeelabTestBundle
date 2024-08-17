@@ -7,9 +7,6 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 
 final class BeelabTestExtension extends Extension
 {
-    /**
-     * @param array<int, mixed> $configs
-     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
