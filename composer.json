@@ -28,7 +28,7 @@
         "doctrine/lexer": "^2.1",
         "doctrine/orm": "^2.16",
         "mikey179/vfsstream": "^1.6.7",
-        "phpunit/phpunit": "^9.6",
+        "phpunit/phpunit": "^10.5 || ^11.3",
         "symfony/doctrine-bridge": "^6.4 || ^7.0",
         "symfony/framework-bundle": "^6.4 || ^7.0",
         "symfony/mime": "^6.4 || ^7.0",
