@@ -72,8 +72,8 @@ services:
 
   You can output the content of response in your browser, just calling `self::saveOutput()`.
   You can define a parameter named `domain`, otherwise standard localhost will be used. 
-  The output will be save under document root and displayed with browser (by default, `/usr/bin/firefox`),
-  then the page will be deleted.
+  The output is saved under the document root and displayed with a browser (by default, `/usr/bin/firefox`),
+  then the page is deleted.
   You can pass `false` as argument to prevent page deletion (in this case, you can get it from your document
   root directory.
   Don't forget to remove it by hand, then).
@@ -102,7 +102,7 @@ services:
 * Automatic login
 
   This is integrated by default with [BeelabUserBundle](https://github.com/Bee-Lab/BeelabUserBundle).
-  Anyway, you can use any user provider, passing the name of service as third argument or configuring.
+  Anyway, you can use any user provider, passing the name of the service as third argument or configuring it.
   For example, if you want to login users provided by FOSUserBundle in your tests, you can do something like
   `self::login('myuser', 'main', 'fos_user.user_provider.username');`.
   Another notable service you can use is Symfony's built-in `security.user.provider.concrete.in_memory`.
@@ -118,7 +118,7 @@ services:
 
 * Test login exception
 
-  You can use `setSessionException` static method to test a generic exception in authentication.
+  You can use the `setSessionException` static method to test a generic exception in authentication.
   Just call such method and then visit your login page, e.g. `self::$client->request('GET', '/login')`.
  
 * Support for basic authentication
@@ -148,8 +148,8 @@ services:
   
   Typically, a form with a collection is a problem during tests, because the values of collections are not displayed
   in the HTML (but, instead, added via JavaScript).
-  You can solve such problema by visiting form URL and then using `self::postForm('your_form_name', $values)`
-  (where`$values` can include collection values).
+  You can solve such problem by visiting the form URL and then using `self::postForm('your_form_name', $values)`
+  (where `$values` can include collection values).
 
 * Selecting checkboxes
 
