@@ -159,6 +159,8 @@ services:
 
 ### Fixtures-related
 
+⚠️️ **Warning**: these features are now deprecated and will be removed in the next major version.
+
 * Fast fixtures load
 
   Load fixtures simply with `$this->loadFixtures(['YourFixtureClassName', 'YourOtherFixtureClassName'])`.
