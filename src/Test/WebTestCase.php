@@ -25,7 +25,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 
 abstract class WebTestCase extends SymfonyWebTestCase
 {
-    protected static ?EntityManagerInterface $em = null;
+    protected static ?EntityManagerInterface $em = null;    // @deprecated
     protected static KernelBrowser $client;
     private ?AbstractFixture $fixture = null;
     protected static ?string $authUser = null;
@@ -174,6 +174,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      *
      * @throws \Doctrine\DBAL\Exception
      * @throws \InvalidArgumentException
+     * @deprecated
      */
     protected function loadFixtures(
         array $fixtures,
@@ -181,6 +182,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
         ?string $managerService = null,
         bool $append = false,
     ): void {
+        trigger_error('loadFixtures is deprecated and will be removed in the next major version', E_USER_DEPRECATED);
         if (null !== $managerService) {
             $manager = static::$container->get($managerService);
             if (!$manager instanceof EntityManagerInterface) {
@@ -249,9 +251,11 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     /**
      * Get an entity by its fixtures reference name.
+     * @deprecated
      */
     protected function getReference(string $name): object
     {
+        trigger_error('getReference is deprecated and will be removed in the next major version', E_USER_DEPRECATED);
         if (null === $this->fixture) {
             throw new \RuntimeException('Load some fixtures before.');
         }
@@ -364,6 +368,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Load a single fixture class
      * (with possible other dependent fixture classes).
+     * @deprecated
      */
     private function loadFixtureClass(Loader $loader, string $className): void
     {
