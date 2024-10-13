@@ -2,6 +2,7 @@
 
 namespace Beelab\TestBundle\Test;
 
+use Beelab\TestBundle\File\FileInjector;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
@@ -118,9 +119,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function getImageFile(string $file = '0'): UploadedFile
     {
-        $data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQI12P4//8/AAX+Av7czFnnAAAAAElFTkSuQmCC';
-
-        return self::getFile($file, $data, 'png', 'image/png');
+        return FileInjector::getImageFile($file);
     }
 
     /**
@@ -128,19 +127,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function getPdfFile(string $file = '0'): UploadedFile
     {
-        $data = <<<'EOF'
-            JVBERi0xLjEKJcKlwrHDqwoKMSAwIG9iagogIDw8IC9UeXBlIC9DYXRhbG9nCiAgICAgL1BhZ2VzIDIgMCBSCiAgPj4KZW5kb2JqCgoyIDAgb2JqCiAgP
-            DwgL1R5cGUgL1BhZ2VzCiAgICAgL0tpZHMgWzMgMCBSXQogICAgIC9Db3VudCAxCiAgICAgL01lZGlhQm94IFswIDAgMzAwIDE0NF0KICA+PgplbmRvYm
-            oKCjMgMCBvYmoKICA8PCAgL1R5cGUgL1BhZ2UKICAgICAgL1BhcmVudCAyIDAgUgogICAgICAvUmVzb3VyY2VzCiAgICAgICA8PCAvRm9udAogICAgICA
-            gICAgIDw8IC9GMQogICAgICAgICAgICAgICA8PCAvVHlwZSAvRm9udAogICAgICAgICAgICAgICAgICAvU3VidHlwZSAvVHlwZTEKICAgICAgICAgICAg
-            ICAgICAgL0Jhc2VGb250IC9UaW1lcy1Sb21hbgogICAgICAgICAgICAgICA+PgogICAgICAgICAgID4+CiAgICAgICA+PgogICAgICAvQ29udGVudHMgN
-            CAwIFIKICA+PgplbmRvYmoKCjQgMCBvYmoKICA8PCAvTGVuZ3RoIDU1ID4+CnN0cmVhbQogIEJUCiAgICAvRjEgMTggVGYKICAgIDAgMCBUZAogICAgKE
-            hlbGxvIFdvcmxkKSBUagogIEVUCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA1CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxOCAwMDAwMCBuIAo
-            wMDAwMDAwMDc3IDAwMDAwIG4gCjAwMDAwMDAxNzggMDAwMDAgbiAKMDAwMDAwMDQ1NyAwMDAwMCBuIAp0cmFpbGVyCiAgPDwgIC9Sb290IDEgMCBSCiAg
-            ICAgIC9TaXplIDUKICA+PgpzdGFydHhyZWYKNTY1CiUlRU9GCg==
-            EOF;
-
-        return self::getFile($file, $data, 'pdf', 'application/pdf');
+        return FileInjector::getPdfFile($file);
     }
 
     /**
@@ -148,12 +135,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function getZipFile(string $file = '0'): UploadedFile
     {
-        $data = <<<'EOF'
-            UEsDBAoAAgAAAM5RjEVOGigMAgAAAAIAAAAFABwAaC50eHRVVAkAA/OxilTzsYpUdXgLAAEE6AMAAARkAAAAaApQSwECHgMKAAIAAADOUYxF
-            ThooDAIAAAACAAAABQAYAAAAAAABAAAApIEAAAAAaC50eHRVVAUAA/OxilR1eAsAAQToAwAABGQAAABQSwUGAAAAAAEAAQBLAAAAQQAAAAAA
-            EOF;
-
-        return self::getFile($file, $data, 'zip', 'application/zip');
+        return FileInjector::getZipFile($file);
     }
 
     /**
@@ -161,9 +143,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function getTxtFile(string $file = '0'): UploadedFile
     {
-        $data = 'Lorem ipsum dolor sit amet';
-
-        return self::getFile($file, $data, 'txt', 'text/plain');
+        return FileInjector::getTxtFile($file);
     }
 
     /**
@@ -271,15 +251,11 @@ abstract class WebTestCase extends SymfonyWebTestCase
      */
     protected static function getFile(string $file, string $data, string $ext, string $mime): UploadedFile
     {
-        $name = 'file_'.$file.'.'.$ext;
-        $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
-        \file_put_contents($path, \str_starts_with($mime, 'text') ? $data : \base64_decode($data));
-
-        return new UploadedFile($path, $name, $mime);
+        return FileInjector::getFile($file, $data, $ext, $mime);
     }
 
     /**
-     * Submit a form that needs extra values (tipically, a form with collections).
+     * Submit a form that needs extra values (typically, a form with collections).
      *
      * @param string $name   The name of form
      * @param array  $values The values to submit

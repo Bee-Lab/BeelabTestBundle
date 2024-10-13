@@ -135,6 +135,9 @@ services:
   In forms with more than a field of the same type, use `self::getImageFile('1')`, `self::getImageFile('2')`, etc.
   You can also use `self::getFile('0', $data, 'png', 'image/png')` and pass directly your file data.
 
+  💡 ** Bonus** The above methods are shortcuts for the `Beelab\TestBundle\File\FileInjector` class, so you
+  can use them in your fixtures, too. Import the class and use `FileInjector::getFile()` etc.
+
 * Form values shortcut
 
   If you need to retrieve the value of a form field, you can use `self::getFormValue('form_field')`.
