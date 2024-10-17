@@ -135,7 +135,8 @@ services:
   You can also use `self::getFile('0', $data, 'png', 'image/png')` and pass directly your file data.
 
   💡 ** Bonus** The above methods are shortcuts for the `Beelab\TestBundle\File\FileInjector` class, so you
-  can use them in your fixtures, too. Import the class and use `FileInjector::getFile()` etc.
+  can use them in your fixtures, too. Import the class and use `FileInjector::getFile(fixture: true)` etc.
+  Don't forget to pass the `$fixture` argument.
 
 * Form values shortcut
 
