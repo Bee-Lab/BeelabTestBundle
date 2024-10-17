@@ -1,5 +1,4 @@
-BeelabTestBundle Documentation
-==============================
+# BeelabTestBundle Documentation
 
 ## Installation
 
@@ -159,24 +158,6 @@ services:
   You can check many checkboxes using `self::tickCheckboxes($form, $values)`, using for values the same
   array you would use for a select multiple. This allows you to easily switch between `true` and `false`
   in `multiple` option of `ChoiceType`.
-
-### Fixtures-related
-
-⚠️️ **Warning**: these features are now deprecated and will be removed in the next major version.
-
-* Fast fixtures load
-
-  Load fixtures simply with `$this->loadFixtures(['YourFixtureClassName', 'YourOtherFixtureClassName'])`.
-  Dependencies are resolved (as long as you implement `DependentFixtureInterface`), so you don't need to explicitly
-  load all your fixtures.
-
-* Get entity by reference
-
-  If you need an entity in a functional test, you can get it by calling `$this->getReference('refname')`, where
-  `refname` is a name of a reference you used inside a fixture.
-  E.g., if you used `$this->addReference('foo')` or `$this->setReference('foo')` inside one of your fixtures, you
-  can call `$this->getReference('foo')` to retrieve the entity you created in that fixture.
-  ⚠️️ **Warning**: this method is working only if you are loading fixtures during test execution.
 
 ### Selection-related
 

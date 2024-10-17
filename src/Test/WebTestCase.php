@@ -3,11 +3,6 @@
 namespace Beelab\TestBundle\Test;
 
 use Beelab\TestBundle\File\FileInjector;
-use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\DataFixtures\Loader;
-use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as SymfonyWebTestCase;
@@ -26,9 +21,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationServiceException;
 
 abstract class WebTestCase extends SymfonyWebTestCase
 {
-    protected static ?EntityManagerInterface $em = null;    // @deprecated
     protected static KernelBrowser $client;
-    private ?AbstractFixture $fixture = null;
     protected static ?string $authUser = null;
     protected static ?string $authPw = null;
     protected static ?ContainerInterface $container = null;
@@ -43,9 +36,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
             $kernel = static::createKernel(['environment' => $environment]);
             $kernel->boot();
             static::$container = $kernel->getContainer();
-            if (static::$container->has('doctrine.orm.entity_manager')) {
-                self::$em = static::$container->get('doctrine.orm.entity_manager');
-            }
         }
         if (!empty(static::$authUser) && !empty(static::$authPw)) {
             self::$client = static::createClient(['environment' => $environment], [
@@ -55,12 +45,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
         } else {
             self::$client = static::createClient(['environment' => $environment]);
         }
-    }
-
-    protected function tearDown(): void
-    {
-        self::$em?->getConnection()->close();
-        parent::tearDown();
     }
 
     /**
@@ -147,41 +131,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
     }
 
     /**
-     * Load fixtures as an array of "names"
-     * This is inspired by https://github.com/liip/LiipFunctionalTestBundle.
-     *
-     * @param array<int, string> $fixtures e.g. ['UserData', 'OrderData']
-     *
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \InvalidArgumentException
-     * @deprecated
-     */
-    protected function loadFixtures(
-        array $fixtures,
-        string $namespace = 'App\\DataFixtures\\ORM\\',
-        ?string $managerService = null,
-        bool $append = false,
-    ): void {
-        trigger_error('loadFixtures is deprecated and will be removed in the next major version', E_USER_DEPRECATED);
-        if (null !== $managerService) {
-            $manager = static::$container->get($managerService);
-            if (!$manager instanceof EntityManagerInterface) {
-                throw new \InvalidArgumentException(\sprintf('The service "%s" is not an EntityManager', $manager::class));
-            }
-        } else {
-            $manager = self::$em;
-        }
-        $manager->getConnection()->executeStatement('SET foreign_key_checks = 0');
-        $loader = new Loader();
-        foreach ($fixtures as $fixture) {
-            $this->loadFixtureClass($loader, $namespace.$fixture);
-        }
-        $executor = new ORMExecutor($manager, new ORMPurger());
-        $executor->execute($loader->getFixtures(), $append);
-        $manager->getConnection()->executeStatement('SET foreign_key_checks = 1');
-    }
-
-    /**
      * Get a form field value, from its id
      * Useful for POSTs.
      */
@@ -227,23 +176,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
         $commandTester->execute(\array_merge(['command' => $cmd->getName()], $arguments));
 
         return $commandTester->getDisplay();
-    }
-
-    /**
-     * Get an entity by its fixtures reference name.
-     * @deprecated
-     */
-    protected function getReference(string $name): object
-    {
-        trigger_error('getReference is deprecated and will be removed in the next major version', E_USER_DEPRECATED);
-        if (null === $this->fixture) {
-            throw new \RuntimeException('Load some fixtures before.');
-        }
-        if (!$this->fixture->hasReference($name)) {
-            throw new \InvalidArgumentException(\sprintf('Reference "%s" not found.', $name));
-        }
-
-        return $this->fixture->getReference($name);
     }
 
     /**
@@ -339,23 +271,6 @@ abstract class WebTestCase extends SymfonyWebTestCase
             }
         }
         throw new \InvalidArgumentException('Field not found.');
-    }
-
-    /**
-     * Load a single fixture class
-     * (with possible other dependent fixture classes).
-     * @deprecated
-     */
-    private function loadFixtureClass(Loader $loader, string $className): void
-    {
-        $fixture = new $className();
-        if ($loader->hasFixture($fixture)) {
-            unset($fixture);
-
-            return;
-        }
-        $loader->addFixture($fixture);
-        $this->fixture = $fixture;
     }
 
     private static function getSession(): SessionInterface

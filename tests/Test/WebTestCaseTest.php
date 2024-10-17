@@ -3,7 +3,6 @@
 namespace Beelab\TestBundle\Tests;
 
 use Beelab\TestBundle\Test\WebTestCase;
-use Doctrine\Common\DataFixtures\Loader;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -213,49 +212,6 @@ final class WebTestCaseTest extends TestCase
 
         self::assertInstanceOf(UploadedFile::class, $file);
         self::assertEquals('text/plain', $file->getMimeType());
-    }
-
-    public function testLoadFixtureClass(): void
-    {
-        $loader = $this->getMockBuilder(Loader::class)->disableOriginalConstructor()->getMock();
-
-        // Call `loadFixtureClass` method
-        $method = new \ReflectionMethod(self::$mock, 'loadFixtureClass');
-        $method->invoke(self::$mock, $loader, FakeFixtureDependent::class);
-
-        $property = new \ReflectionProperty(WebTestCase::class, 'fixture');
-        $fixture = $property->getValue(self::$mock);
-
-        self::assertInstanceOf(FakeFixtureDependent::class, $fixture);
-    }
-
-    public function testLoadFixtures(): void
-    {
-        self::markTestIncomplete('Need to mock `loadFixtureClass` method correctly');
-        /*
-        self::$mock
-            ->expects(self::exactly(2))
-            ->method('loadFixtureClass');
-
-        $connection = $this->createMock('stdClass');
-        $eventManager = $this->createMock('stdClass');
-        $manager = $this->createMock(EntityManagerInterface::class);
-        $manager
-            ->method('getConnection')
-            ->willReturn($connection);
-        $manager
-            ->method('getEventManager')
-            ->willReturn($eventManager);
-
-        self::$container
-            ->method('get')
-            ->with('my.manager')
-            ->willReturn($manager);
-
-        // Call `loadFixtures` method
-        $method = new \ReflectionMethod(self::$mock, 'loadFixtures');
-        $method->invoke(self::$mock, ['Fixture1', 'Fixture2'], 'My\\NameSpace\\', 'my.manager');
-        */
     }
 
     public function testAjax(): void
