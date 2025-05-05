@@ -249,7 +249,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     protected static function assertSelectorCounts(int $number, string $selector, string $message = ''): void
     {
-        self::assertCount($number, self::$client->getCrawler()->filter($selector), $message);
+        @\trigger_error(\sprintf('%s is deprecated since version %s, use self::assertSelectorCount instead.', __METHOD__, '7.1'), \E_USER_DEPRECATED);
+
+        self::assertSelectorCount($number, $selector, $message);
     }
 
     protected static function tickCheckboxes(Form $form, array $checkboxValues = []): void

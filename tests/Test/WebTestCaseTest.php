@@ -74,7 +74,7 @@ final class WebTestCaseTest extends TestCase
         $method = new \ReflectionMethod(self::$mock, 'saveOutput');
         $method->invoke(self::$mock, false);
 
-        /** @var \org\bovigo\vfs\vfsStreamFile $file */
+        /** @var \org\bovigo\vfs\vfsStreamFile|null $file */
         $file = $vfs->getChild('public/test.html');
         self::assertNotNull($file);
         self::assertEquals('Response content', $file->getContent());
