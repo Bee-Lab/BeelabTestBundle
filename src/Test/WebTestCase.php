@@ -76,7 +76,7 @@ abstract class WebTestCase extends SymfonyWebTestCase
 
     /**
      * Login
-     * See https://web.archive.org/web/20131002151908/http://blog.bee-lab.net/login-automatico-con-fosuserbundle/
+     * See https://github.com/Bee-Lab/BeelabTestBundle/blob/master/docs/index.md#authentication-related
      * Be sure that $firewall matches the entry in your security.yaml configuration.
      *
      * @throws \InvalidArgumentException

@@ -1,8 +1,10 @@
 name: build
 
 on:
+    push:
+        branches:
+            - main
     pull_request: ~
-    push: ~
 
 jobs:
     phpstan:
@@ -37,16 +39,16 @@ jobs:
                       php: '8.2'
                       symfony: '6.4.*'
                       composer_option: '--prefer-lowest'
-                    - description: 'Symfony 7.1'
+                    - description: 'Symfony 7.3'
                       php: '8.3'
-                      symfony: '7.1.*'
-                    - description: 'Symfony 7.2'
+                      symfony: '7.3.*'
+                    - description: 'Symfony 7.4'
                       php: '8.4'
-                      symfony: '7.2.*@dev'
+                      symfony: '7.4.*@dev'
         name: PHP ${{ matrix.php }} tests (${{ matrix.description }})
         steps:
             - name: Checkout
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
             - name: Cache
               uses: actions/cache@v3
               with: 
@@ -68,8 +70,10 @@ jobs:
             - name: update vendors
               run: composer update --no-interaction --no-progress --ansi ${{ matrix.composer_option }}
             - name: run tests
-              run: bin/phpunit --coverage-clover=clover.xml
+              run: bin/phpunit --colors=always --coverage-clover=clover.xml
             - name: save test coverage
-              uses: codecov/codecov-action@v1
+              if: ${{ matrix.php == '8.4' }}
+              uses: qltysh/qlty-action/coverage@v1
               with:
-                  files: ./clover.xml
+                  token: ${{secrets.QLTY_COVERAGE_TOKEN}}
+                  files: clover.xml

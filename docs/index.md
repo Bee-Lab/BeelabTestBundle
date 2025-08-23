@@ -69,14 +69,14 @@ services:
 
 * Browser output debug
 
-  You can output the content of response in your browser, just calling `self::saveOutput()`.
+  You can output the content of the response in your browser, just calling `self::saveOutput()`.
   You can define a parameter named `domain`, otherwise standard localhost will be used. 
   The output is saved under the document root and displayed with a browser (by default, `/usr/bin/firefox`),
   then the page is deleted.
   You can pass `false` as argument to prevent page deletion (in this case, you can get it from your document
-  root directory.
-  Don't forget to remove it by hand, then).
+  root directory. Don't forget to remove it by hand, then).
   If you want to change browser path, define it in your configuration:
+
   ```yaml
   # config/packages/test/beelab_test.yaml
   beelab_test:
@@ -91,10 +91,8 @@ services:
 
 * Assert presence of many selectors
 
-  `self::assertSelectorCounts()` method works like native `self::assertSelectorExists()`.
-  For example, you can check for presence of `div.alert-success` using 
-  `self::assertSelectorExists('div.alert-success')` or using `self::assertSelectorCounts(1, 'div.alert-success')`
-  (the latter being more specific, and more flexible).
+  An old method `self::assertSelectorCounts()` is still available, but deprecated.
+  You should use the native method ``self::assertSelectorCount()` instead.
 
 ### Authentication-related
 
@@ -106,6 +104,7 @@ services:
   `self::login('myuser', 'main', 'fos_user.user_provider.username');`.
   Another notable service you can use is Symfony's built-in `security.user.provider.concrete.in_memory`.
   For basic usage, just pass the username as first argument.
+  To avoid passing the service every time, you can configure it.
 
   Example of configuration:
   ```yaml
@@ -134,7 +133,7 @@ services:
   In forms with more than a field of the same type, use `self::getImageFile('1')`, `self::getImageFile('2')`, etc.
   You can also use `self::getFile('0', $data, 'png', 'image/png')` and pass directly your file data.
 
-  💡 ** Bonus** The above methods are shortcuts for the `Beelab\TestBundle\File\FileInjector` class, so you
+  💡 **Bonus** The above methods are shortcuts for the `Beelab\TestBundle\File\FileInjector` class, so you
   can use them in your fixtures, too. Import the class and use `FileInjector::getFile(fixture: true)` etc.
   Don't forget to pass the `$fixture` argument.
 

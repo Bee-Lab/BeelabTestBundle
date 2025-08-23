@@ -1,9 +1,9 @@
 # BeelabTestBundle
 
 [![Build Status](https://github.com/Bee-Lab/BeelabTestBundle/workflows/build/badge.svg)](https://github.com/Bee-Lab/BeelabTestBundle/actions)
-[![codecov](https://codecov.io/github/Bee-Lab/BeelabTestBundle/branch/master/graph/badge.svg?token=xU1pOUeU3M)](https://codecov.io/github/Bee-Lab/BeelabTestBundle)
+[![Code Coverage](https://qlty.sh/gh/Bee-Lab/projects/BeelabTestBundle/coverage.svg)](https://qlty.sh/gh/Bee-Lab/projects/BeelabTestBundle)
 
-This bundle contains just an opinionated extension of Symfony `WebTestCase`.
+This bundle contains an opinionated extension of Symfony `WebTestCase`.
 
 ## Documentation
 
