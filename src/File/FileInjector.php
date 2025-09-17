@@ -10,7 +10,7 @@ final class FileInjector
     {
         $name = 'file_'.$file.'.'.$ext;
         $path = \tempnam(\sys_get_temp_dir(), 'sf_test_').$name;
-        \file_put_contents($path, \str_starts_with($mime, 'text') ? $data : \base64_decode($data));
+        \file_put_contents($path, \str_starts_with($mime, 'text') ? $data : \base64_decode($data, true));
 
         return new UploadedFile($path, $name, $mime, null, $fixture);
     }
