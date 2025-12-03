@@ -150,23 +150,31 @@ abstract class WebTestCase extends SymfonyWebTestCase
     /**
      * Execute a command and return output.
      *
-     * @param string  $name          Command name (e.g. "app:send")
-     * @param Command $command       Command instance (e.g. new SendCommand())
-     * @param array   $arguments     Possible command arguments and options
-     * @param array   $otherCommands Possible other commands to define
-     * @param ?array  $inputs        Possible inputs to set inside command
+     * @param string          $name          Command name (e.g. "app:send")
+     * @param callable|object $command       Command instance (e.g. new SendCommand())
+     * @param array           $arguments     Possible command arguments and options
+     * @param array           $otherCommands Possible other commands to define
+     * @param ?array          $inputs        Possible inputs to set inside command
      */
     protected static function commandTest(
         string $name,
-        Command $command,
+        callable|object $command,
         array $arguments = [],
         array $otherCommands = [],
         ?array $inputs = null,
     ): string {
         $application = new Application(self::$client->getKernel());
-        $application->add($command);
-        foreach ($otherCommands as $otherCommand) {
-            $application->add($otherCommand);
+        // @phpstan-ignore-next-line function.alreadyNarrowedType
+        if (\method_exists($application, 'addCommand')) {
+            $application->addCommand($command);
+            foreach ($otherCommands as $otherCommand) {
+                $application->addCommand($otherCommand);
+            }
+        } else {
+            $application->add($command);
+            foreach ($otherCommands as $otherCommand) {
+                $application->add($otherCommand);
+            }
         }
         $cmd = $application->find($name);
         $commandTester = new CommandTester($cmd);
