@@ -46,7 +46,7 @@ final class WebTestCaseTest extends TestCase
         self::$container
             ->method('getParameter')
             ->willReturnCallback(
-                function (string $parameter): string {
+                static function (string $parameter): string {
                     return match ($parameter) {
                         'beelab_test.browser' => 'test',
                         'kernel.project_dir' => vfsStream::url('proj'),
@@ -99,7 +99,7 @@ final class WebTestCaseTest extends TestCase
         self::$container
             ->method('has')
             ->willReturnCallback(
-                function (string $service): bool {
+                static function (string $service): bool {
                     return match ($service) {
                         'session.factory', 'test.session.factory' => false,
                         'session' => true,
@@ -111,7 +111,7 @@ final class WebTestCaseTest extends TestCase
         self::$container
             ->method('get')
             ->willReturnCallback(
-                function (string $service) use ($repository, $session): ?object {
+                static function (string $service) use ($repository, $session): ?object {
                     return match ($service) {
                         'beelab_user.manager' => $repository,
                         'session' => $session,
@@ -149,7 +149,7 @@ final class WebTestCaseTest extends TestCase
         self::$container
             ->method('get')
             ->willReturnCallback(
-                function (string $service) use ($repository, $session): ?object {
+                static function (string $service) use ($repository, $session): ?object {
                     return match ($service) {
                         'beelab_user.manager' => $repository,
                         'session' => $session,
