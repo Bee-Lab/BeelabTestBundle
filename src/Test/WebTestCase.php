@@ -171,9 +171,9 @@ abstract class WebTestCase extends SymfonyWebTestCase
                 $application->addCommand($otherCommand);
             }
         } else {
-            $application->add($command);
+            $application->add($command);    // @phpstan-ignore-line method.notFound
             foreach ($otherCommands as $otherCommand) {
-                $application->add($otherCommand);
+                $application->add($otherCommand);    // @phpstan-ignore-line method.notFound
             }
         }
         $cmd = $application->find($name);
